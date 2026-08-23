@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#123b32">
   <title>AMFCC IT Administration</title>
   <link rel="stylesheet" href="it-admin.css?v=1.0">
+  <link rel="stylesheet" href="it-admin-fixes.css?v=1.1">
 </head>
 <body>
   <div id="toast" class="toast" hidden role="status" aria-live="polite"></div>
@@ -85,12 +86,12 @@
         </section>
 
         <section id="view-modes" class="view" aria-labelledby="modes-title">
-          <div class="view-heading"><div><p class="eyebrow">Institution-wide control</p><h2 id="modes-title">Operating mode</h2><p>One choice updates every connected site.</p></div></div>
+          <div class="view-heading"><div><p class="eyebrow">Institution-wide control</p><h2 id="modes-title">Operating modes</h2><p>Choose the school calendar first, then turn the Conference overlay on or off independently.</p></div></div>
           <form id="mode-form" class="panel">
             <div class="mode-grid">
               <label class="mode-card normal">
                 <input type="radio" name="operating-mode" value="normal">
-                <span class="mode-name">Normal Mode</span>
+                <span class="mode-name">School Term Mode</span>
                 <span>Standard meal deadlines and the regular manual-work session timetable.</span>
               </label>
               <label class="mode-card holiday">
@@ -98,14 +99,13 @@
                 <span class="mode-name">Holiday Mode</span>
                 <span>Morning and Afternoon manual-work slots, with the existing holiday gate-pass rules.</span>
               </label>
-              <label class="mode-card conference">
-                <input type="radio" name="operating-mode" value="conference">
-                <span class="mode-name">Conference Mode</span>
-                <span>No meal deadline, no manual-work sessions, and every active task is treated as an Emergency.</span>
-              </label>
             </div>
+            <label class="conference-overlay-card">
+              <span><strong>Conference Mode overlay</strong><small>Works alongside the selected School Term or Holiday Mode. It removes meal deadlines and manual-work sessions, and treats every active task as an Emergency.</small></span>
+              <input id="conference-mode" type="checkbox">
+            </label>
             <div id="mode-impact" class="notice info"></div>
-            <button class="button primary" type="submit">Apply operating mode</button>
+            <button class="button primary" type="submit">Apply mode settings</button>
           </form>
         </section>
 
@@ -184,6 +184,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="shared_config.js"></script>
   <script src="shared_supabase.js"></script>
-  <script src="it-admin.js?v=1.0"></script>
+  <script src="it-admin.js?v=1.1"></script>
 </body>
 </html>

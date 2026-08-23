@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var state = { client: null, session: null, data: null, toastTimer: null, pinTarget: null };
+  var state = { client: null, session: null, data: null, modeStatus: null, toastTimer: null, pinTarget: null };
   function el(id) { return document.getElementById(id); }
   function all(selector, root) { return Array.prototype.slice.call((root || document).querySelectorAll(selector)); }
   function esc(value) { return String(value == null ? "" : value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;"); }
@@ -39,30 +39,36 @@
   function switchView(view) {
     all(".view").forEach(function (node) { node.classList.toggle("active",node.id === "view-" + view); });
     all("#main-nav button").forEach(function (node) { node.classList.toggle("active",node.dataset.view === view); });
-    window.scrollTo({top:0,behavior:"smooth"});
   }
-  function modeCopy(mode) {
-    if (mode === "conference") return { label:"Conference Mode", message:"Meal planning has no deadline. Manual-work sessions and group allocations are blocked. Every open or new task is an Emergency with Critical priority." };
-    if (mode === "holiday") return { label:"Holiday Mode", message:"Manual work uses Morning and Afternoon slots. Existing Holiday Mode gate-pass rules remain active. Normal meal deadlines still apply." };
-    return { label:"Normal Mode", message:"Standard meal deadlines, gate-pass rules, and the regular manual-work session timetable apply." };
+  function modeCopy(baseMode, conference) {
+    var baseLabel = baseMode === "holiday" ? "Holiday Mode" : "School Term Mode";
+    if (conference) return {
+      label:baseLabel + " + Conference Mode",
+      message:"The " + baseLabel + " calendar and gate-pass rules remain active. Conference Mode removes meal deadlines and manual-work sessions, and every open or new task is an Emergency with Critical priority."
+    };
+    if (baseMode === "holiday") return { label:baseLabel, message:"Manual work uses Morning and Afternoon slots. Existing Holiday Mode gate-pass rules remain active. Normal meal deadlines apply." };
+    return { label:baseLabel, message:"Standard meal deadlines, gate-pass rules, and the regular manual-work session timetable apply." };
   }
   function renderMode() {
-    var mode = state.data.mode || "normal", copy = modeCopy(mode), pill = el("mode-pill");
-    pill.textContent = copy.label; pill.className = "mode-pill " + mode;
+    var status = state.modeStatus || {}, mode = status.base_mode || status.mode || state.data.mode || "normal";
+    var conference = !!status.conference_mode, copy = modeCopy(mode,conference), pill = el("mode-pill");
+    pill.textContent = copy.label; pill.className = "mode-pill " + (conference ? "conference" : mode);
     var radio = document.querySelector('input[name="operating-mode"][value="' + mode + '"]'); if (radio) radio.checked = true;
+    el("conference-mode").checked = conference;
     el("mode-impact").innerHTML = "<strong>Current effect:</strong> " + esc(copy.message);
-    el("current-rules").className = "panel rule-panel " + mode;
+    el("current-rules").className = "panel rule-panel " + (conference ? "conference" : mode);
     el("current-rules").innerHTML = '<p class="eyebrow">' + esc(copy.label) + '</p><h3>' + esc(copy.message) + '</h3><div class="rule-list">' +
-      '<div class="rule-item"><strong>Meals</strong><span>' + (mode === "conference" ? "No check-in deadline" : "Scheduled deadlines") + '</span></div>' +
-      '<div class="rule-item"><strong>Manual work</strong><span>' + (mode === "conference" ? "No sessions" : mode === "holiday" ? "Morning and Afternoon" : "Regular timetable") + '</span></div>' +
-      '<div class="rule-item"><strong>Tasks</strong><span>' + (mode === "conference" ? "All Emergency" : "Normal task types") + '</span></div></div>';
+      '<div class="rule-item"><strong>Meals</strong><span>' + (conference ? "No check-in deadline" : "Scheduled deadlines") + '</span></div>' +
+      '<div class="rule-item"><strong>Manual work</strong><span>' + (conference ? "No sessions" : mode === "holiday" ? "Morning and Afternoon" : "Regular timetable") + '</span></div>' +
+      '<div class="rule-item"><strong>Tasks</strong><span>' + (conference ? "All Emergency" : "Normal task types") + '</span></div></div>';
   }
   function renderSummary() {
     var roles = state.data.role_credentials || [], departments = state.data.departments || [];
     var configuredRoles = roles.filter(function (r) { return r.pin_configured; }).length;
     var configuredDepartments = departments.filter(function (d) { return d.pin_configured; }).length;
     var locked = roles.filter(function (r) { return r.locked_until && new Date(r.locked_until) > new Date(); }).length;
-    var cards = [[modeCopy(state.data.mode).label,"Operating mode"],[configuredRoles + " / " + roles.length,"Role PINs ready"],[configuredDepartments + " / " + departments.length,"Department PINs ready"],[locked,"Temporarily locked roles"]];
+    var status = state.modeStatus || {}, base = status.base_mode || state.data.mode || "normal";
+    var cards = [[modeCopy(base,!!status.conference_mode).label,"Operating modes"],[configuredRoles + " / " + roles.length,"Role PINs ready"],[configuredDepartments + " / " + departments.length,"Department PINs ready"],[locked,"Temporarily locked roles"]];
     el("summary-cards").innerHTML = cards.map(function (c) { return '<article class="summary-card"><strong>' + esc(c[0]) + '</strong><span>' + esc(c[1]) + '</span></article>'; }).join("");
     el("access-readiness").innerHTML = roles.map(function (r) { return '<div class="list-row"><span>' + esc(r.role_label) + '</span><strong>' + (r.pin_configured ? "Ready" : "Not set") + '</strong></div>'; }).join("") || "No role credentials loaded.";
   }
@@ -96,9 +102,13 @@
   }
   function renderAll() { renderMode(); renderSummary(); renderSettings(); renderCredentials(); renderAudit(); el("change-pin-banner").hidden = !state.data.must_change_pin; }
   async function loadData(message) {
-    var data = await rpc("system_control_bootstrap",{p_session_token:state.session.session_token});
+    var results = await Promise.all([
+      rpc("system_control_bootstrap",{p_session_token:state.session.session_token}),
+      rpc("system_mode_status")
+    ]);
+    var data = results[0];
     if (data.status !== "success") throw new Error(data.message || "Could not load IT Administration.");
-    state.data = data; renderAll(); if (message) toast(message);
+    state.data = data; state.modeStatus = results[1]; renderAll(); if (message) toast(message);
   }
   function openPin(type,key,label) { state.pinTarget = {type:type,key:key,label:label}; el("pin-target-type").value = type; el("pin-target-key").value = key; el("pin-modal-title").textContent = "Change " + label + " PIN"; el("pin-target-description").textContent = "Set the shared four-digit PIN for " + label + "."; el("new-pin").value = ""; el("confirm-pin").value = ""; el("pin-modal").hidden = false; setTimeout(function () { el("new-pin").focus(); },40); }
 
@@ -117,10 +127,18 @@
     all("#main-nav button,.jump-view").forEach(function (button) { button.addEventListener("click",function () { switchView(button.dataset.view); }); });
     el("mode-form").addEventListener("submit",async function (event) {
       event.preventDefault(); var selected = document.querySelector('input[name="operating-mode"]:checked');
-      if (!selected) return toast("Choose an operating mode.",true);
-      if (!window.confirm("Apply " + modeCopy(selected.value).label + " across every connected site?")) return;
-      busy(event.currentTarget,true,"Applying mode...");
-      try { var result = await rpc("system_control_set_mode",{p_session_token:state.session.session_token,p_mode:selected.value,p_actor_name:requireActor()}); if (result.status !== "success") throw new Error(result.message); await loadData(false); toast(modeCopy(selected.value).label + " is now active."); }
+      if (!selected) return toast("Choose School Term or Holiday Mode.",true);
+      var conference = el("conference-mode").checked, copy = modeCopy(selected.value,conference);
+      if (!window.confirm("Apply " + copy.label + " across every connected site?")) return;
+      busy(event.currentTarget,true,"Applying modes...");
+      try {
+        var actor = requireActor();
+        var result = await rpc("system_control_set_mode",{p_session_token:state.session.session_token,p_mode:selected.value,p_actor_name:actor});
+        if (result.status !== "success") throw new Error(result.message);
+        result = await rpc("system_control_set_conference",{p_session_token:state.session.session_token,p_enabled:conference,p_actor_name:actor});
+        if (result.status !== "success") throw new Error(result.message);
+        await loadData(false); toast(copy.label + " is now active.");
+      }
       catch (error) { toast(error.message || "Mode could not be changed.",true); } finally { busy(event.currentTarget,false); }
     });
     el("settings-form").addEventListener("submit",async function (event) {
