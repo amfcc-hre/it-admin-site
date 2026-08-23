@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#123b32">
+  <title>AMFCC IT Administration</title>
+  <link rel="stylesheet" href="it-admin.css?v=1.0">
+</head>
+<body>
+  <div id="toast" class="toast" hidden role="status" aria-live="polite"></div>
+
+  <main id="login-screen" class="login-screen">
+    <section class="login-card" aria-labelledby="login-title">
+      <div class="brand-mark" aria-hidden="true">IT</div>
+      <p class="eyebrow">AMFCC control centre</p>
+      <h1 id="login-title">IT Administration</h1>
+      <p class="lead">Manage operating modes, system settings, access PINs, and service readiness from one protected site.</p>
+      <form id="login-form" class="stack">
+        <label>IT Administrator PIN
+          <input id="login-pin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="one-time-code" required autofocus>
+        </label>
+        <button class="button primary" type="submit">Open IT Administration</button>
+      </form>
+      <div class="notice info"><strong>First login:</strong> use the current School Administrator PIN, then change the IT Administrator PIN immediately.</div>
+      <p id="login-message" class="form-message" hidden></p>
+    </section>
+  </main>
+
+  <div id="app-shell" class="app-shell" hidden>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">AMFCC system control</p>
+        <h1>IT Administration</h1>
+      </div>
+      <div class="topbar-actions">
+        <span id="mode-pill" class="mode-pill">Loading mode</span>
+        <span id="connection-state" class="status-pill neutral">Connecting</span>
+        <button id="refresh-button" class="button quiet" type="button">Refresh</button>
+        <button id="logout-button" class="button quiet" type="button">Sign out</button>
+      </div>
+    </header>
+
+    <div id="change-pin-banner" class="change-pin-banner" hidden>
+      <div><strong>Change the IT Administrator PIN now.</strong><span>The temporary first-login PIN is shared with School Administration.</span></div>
+      <button class="button warning open-pin" data-target-type="role" data-target-key="it_admin" data-target-label="IT Administrator" type="button">Change PIN</button>
+    </div>
+
+    <div class="workspace">
+      <nav id="main-nav" class="sidebar" aria-label="IT Administration sections">
+        <button class="active" data-view="overview" type="button">Overview</button>
+        <button data-view="modes" type="button">Operating mode</button>
+        <button data-view="settings" type="button">System settings</button>
+        <button data-view="access" type="button">PIN access</button>
+        <button data-view="library" type="button">Library setup</button>
+        <button data-view="audit" type="button">Audit history</button>
+      </nav>
+
+      <main class="content">
+        <div class="identity-strip">
+          <label>Your name for audit records
+            <input id="actor-name" autocomplete="name" placeholder="Enter your name" required>
+          </label>
+          <p>Every settings and access change records who made it.</p>
+        </div>
+
+        <section id="view-overview" class="view active" aria-labelledby="overview-title">
+          <div class="view-heading"><div><p class="eyebrow">Current state</p><h2 id="overview-title">System overview</h2></div></div>
+          <div id="summary-cards" class="summary-grid"></div>
+          <article id="current-rules" class="panel rule-panel"></article>
+          <div class="two-column">
+            <article class="panel">
+              <div class="panel-heading"><div><h3>Access readiness</h3><p>PINs are hashed and never displayed.</p></div></div>
+              <div id="access-readiness" class="list"></div>
+            </article>
+            <article class="panel">
+              <div class="panel-heading"><div><h3>Quick controls</h3><p>Use the dedicated sections for reviewed changes.</p></div></div>
+              <div class="quick-actions">
+                <button class="button secondary jump-view" data-view="modes" type="button">Change operating mode</button>
+                <button class="button secondary jump-view" data-view="access" type="button">Manage PINs</button>
+                <a class="button secondary" href="../library/">Open Library system</a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="view-modes" class="view" aria-labelledby="modes-title">
+          <div class="view-heading"><div><p class="eyebrow">Institution-wide control</p><h2 id="modes-title">Operating mode</h2><p>One choice updates every connected site.</p></div></div>
+          <form id="mode-form" class="panel">
+            <div class="mode-grid">
+              <label class="mode-card normal">
+                <input type="radio" name="operating-mode" value="normal">
+                <span class="mode-name">Normal Mode</span>
+                <span>Standard meal deadlines and the regular manual-work session timetable.</span>
+              </label>
+              <label class="mode-card holiday">
+                <input type="radio" name="operating-mode" value="holiday">
+                <span class="mode-name">Holiday Mode</span>
+                <span>Morning and Afternoon manual-work slots, with the existing holiday gate-pass rules.</span>
+              </label>
+              <label class="mode-card conference">
+                <input type="radio" name="operating-mode" value="conference">
+                <span class="mode-name">Conference Mode</span>
+                <span>No meal deadline, no manual-work sessions, and every active task is treated as an Emergency.</span>
+              </label>
+            </div>
+            <div id="mode-impact" class="notice info"></div>
+            <button class="button primary" type="submit">Apply operating mode</button>
+          </form>
+        </section>
+
+        <section id="view-settings" class="view" aria-labelledby="settings-title">
+          <div class="view-heading"><div><p class="eyebrow">Administrator settings</p><h2 id="settings-title">System settings</h2><p>IT Administration can change every setting available to School Administration.</p></div></div>
+          <form id="settings-form" class="panel form-grid">
+            <label class="toggle span-2"><span><strong>Paper pass pilot mode</strong><small>Run electronic gate passes alongside paper passes.</small></span><input id="pilot-mode" type="checkbox"></label>
+            <label>Pilot start date and time<input id="pilot-start" type="datetime-local"></label>
+            <label>Pilot end date and time<input id="pilot-end" type="datetime-local"></label>
+            <label>Kiosk result duration in seconds<input id="result-seconds" type="number" min="1" max="10" step="0.1" required></label>
+            <label>School time zone<input id="school-timezone" value="Africa/Harare" required></label>
+            <div class="span-2 form-actions"><button class="button primary" type="submit">Save system settings</button></div>
+          </form>
+        </section>
+
+        <section id="view-access" class="view" aria-labelledby="access-title">
+          <div class="view-heading"><div><p class="eyebrow">IT Administrator only</p><h2 id="access-title">PIN access</h2><p>Change any system-role or department PIN. Existing sessions expire normally.</p></div></div>
+          <article class="panel">
+            <div class="panel-heading"><div><h3>System roles</h3><p>Library Staff is disabled until its first PIN is set.</p></div></div>
+            <div id="role-credentials" class="credential-grid"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-heading"><div><h3>Department PINs</h3><p>Each department continues to have one shared four-digit PIN.</p></div><input id="department-search" type="search" placeholder="Find department"></div>
+            <div id="department-credentials" class="credential-grid"></div>
+          </article>
+        </section>
+
+        <section id="view-library" class="view" aria-labelledby="library-title">
+          <div class="view-heading"><div><p class="eyebrow">Circulation readiness</p><h2 id="library-title">Library setup</h2></div></div>
+          <div class="two-column">
+            <article class="panel">
+              <h3>1. Enable Library Staff</h3>
+              <p id="library-pin-status">Checking access status.</p>
+              <button class="button primary open-pin" data-target-type="role" data-target-key="library_staff" data-target-label="Library Staff" type="button">Set Library Staff PIN</button>
+            </article>
+            <article class="panel">
+              <h3>2. Open the empty catalogue</h3>
+              <p>Library staff can then add titles and barcoded copies, issue books, return or renew loans, and export reports.</p>
+              <a class="button secondary" href="../library/">Open Library system</a>
+            </article>
+          </div>
+          <article class="panel">
+            <h3>Initial library rules</h3>
+            <div id="library-rules-preview" class="list">
+              <div class="list-row"><span>Standard loan period</span><strong>14 days</strong></div>
+              <div class="list-row"><span>Maximum active loans</span><strong>3</strong></div>
+              <div class="list-row"><span>Maximum renewals</span><strong>1</strong></div>
+              <div class="list-row"><span>Fines</span><strong>Not included</strong></div>
+            </div>
+            <p class="muted">Administrators can change the first three rules inside the Library system.</p>
+          </article>
+        </section>
+
+        <section id="view-audit" class="view" aria-labelledby="audit-title">
+          <div class="view-heading"><div><p class="eyebrow">Accountability</p><h2 id="audit-title">Audit history</h2><p>Settings and PIN changes only. PIN values are never logged.</p></div></div>
+          <article class="panel table-wrap"><table><thead><tr><th>When</th><th>Area</th><th>Action</th><th>Role</th><th>Details</th></tr></thead><tbody id="audit-rows"></tbody></table></article>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="pin-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="pin-modal-title">
+    <form id="pin-form" class="modal-card">
+      <button id="close-pin-modal" class="modal-close" type="button" aria-label="Close">×</button>
+      <p class="eyebrow">Change shared access</p>
+      <h2 id="pin-modal-title">Change PIN</h2>
+      <p id="pin-target-description"></p>
+      <input id="pin-target-type" type="hidden"><input id="pin-target-key" type="hidden">
+      <label>New four-digit PIN<input id="new-pin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" required></label>
+      <label>Confirm new PIN<input id="confirm-pin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" required></label>
+      <div class="notice warning">The old PIN stops working immediately. The new PIN is not displayed again.</div>
+      <button class="button warning" type="submit">Change PIN</button>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="shared_config.js"></script>
+  <script src="shared_supabase.js"></script>
+  <script src="it-admin.js?v=1.0"></script>
+</body>
+</html>
