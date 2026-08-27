@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var state = { client: null, session: null, data: null, modeStatus: null, toastTimer: null, pinTarget: null };
+  var state = { client: null, session: null, data: null, modeStatus: null, passEmail: null, passEmailHealth: null, toastTimer: null, pinTarget: null };
   function el(id) { return document.getElementById(id); }
   function all(selector, root) { return Array.prototype.slice.call((root || document).querySelectorAll(selector)); }
   function esc(value) { return String(value == null ? "" : value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;"); }
@@ -34,7 +34,7 @@
   function restoreSession() { try { var raw = sessionStorage.getItem("amfcc_it_admin_session"); if (!raw) return false; state.session = JSON.parse(raw); return !!state.session.session_token; } catch (e) { sessionStorage.removeItem("amfcc_it_admin_session"); return false; } }
   function showLogin() { el("login-screen").hidden = false; el("app-shell").hidden = true; el("login-pin").value = ""; }
   function showApp() { el("login-screen").hidden = true; el("app-shell").hidden = false; }
-  async function signOut(server) { if (server !== false && state.session) { try { await rpc("system_control_logout",{p_session_token:state.session.session_token}); } catch (e) {} } state.session = null; state.data = null; sessionStorage.removeItem("amfcc_it_admin_session"); showLogin(); }
+  async function signOut(server) { if (server !== false && state.session) { try { await rpc("system_control_logout",{p_session_token:state.session.session_token}); } catch (e) {} } state.session = null; state.data = null; state.passEmail = null; state.passEmailHealth = null; sessionStorage.removeItem("amfcc_it_admin_session"); showLogin(); }
 
   function switchView(view) {
     all(".view").forEach(function (node) { node.classList.toggle("active",node.id === "view-" + view); });
@@ -80,6 +80,52 @@
     el("result-seconds").value = s.gate_terminal_result_seconds == null ? 3 : s.gate_terminal_result_seconds;
     el("school-timezone").value = s.school_timezone || "Africa/Harare";
   }
+  function parseEmailList(value) {
+    return Array.from(new Set(String(value || "").split(/[\s,;]+/).map(function (item) { return item.trim().toLowerCase(); }).filter(Boolean)));
+  }
+  function renderPassEmail() {
+    var config = state.passEmail || {};
+    var adminEmails = config.admin_emails || [], leadershipEmails = config.student_leadership_emails || [];
+    el("pass-email-from").value = config.from_email || "it@amfcc.ac.zw";
+    el("pass-email-enabled").checked = !!config.enabled;
+    el("pass-admin-emails").value = adminEmails.join("\n");
+    el("pass-leadership-emails").value = leadershipEmails.join("\n");
+    el("pass-email-state").innerHTML = config.enabled
+      ? "<strong>Automatic email is enabled.</strong> Future pass submissions and every status change will be queued for " + esc(adminEmails.length) + " School Administration and " + esc(leadershipEmails.length) + " Student Leadership recipient" + (leadershipEmails.length === 1 ? "." : "s.")
+      : "<strong>Automatic email is off.</strong> Complete the three setup steps, enter recipients, and use Check setup before enabling it.";
+    el("pass-scheduler-status").textContent = config.automatic_dispatch_ready ? "Ready" : "Not ready";
+    el("pass-scheduler-status").className = config.automatic_dispatch_ready ? "ready-text" : "warning-text";
+    var queued = Number(config.queued_count || 0), failed = Number(config.failed_count || 0);
+    el("pass-queue-status").textContent = queued + " queued" + (failed ? ", " + failed + " failed" : "");
+    el("pass-queue-status").className = failed ? "error-text" : "ready-text";
+    renderPassEmailHealth();
+  }
+  function renderPassEmailHealth() {
+    var health = state.passEmailHealth;
+    if (!health) {
+      el("pass-secret-status").textContent = "Not checked";
+      el("pass-domain-status").textContent = "Not checked";
+      return;
+    }
+    el("pass-secret-status").textContent = health.resend_key_configured ? "Installed" : "Missing";
+    el("pass-secret-status").className = health.resend_key_configured ? "ready-text" : "error-text";
+    var domainLabel = health.domain_status === "verified" ? "Verified"
+      : health.domain_status === "check_unavailable" ? "Confirm in Resend"
+      : health.domain_status === "not_found" ? "Not added"
+      : health.domain_status === "not_checked" ? "Waiting for key"
+      : title(health.domain_status || "Not verified");
+    el("pass-domain-status").textContent = domainLabel;
+    el("pass-domain-status").className = health.domain_status === "verified" ? "ready-text" : health.domain_status === "check_unavailable" ? "warning-text" : "error-text";
+  }
+  async function checkPassEmailReadiness(showMessage) {
+    if (!state.client.functions || typeof state.client.functions.invoke !== "function") throw new Error("The email setup check is unavailable.");
+    var response = await state.client.functions.invoke("pass-email-worker", { body: { action: "health" } });
+    if (response.error) throw new Error(response.error.message || "The email setup check failed.");
+    state.passEmailHealth = response.data || {};
+    renderPassEmailHealth();
+    if (showMessage) toast(state.passEmailHealth.message || (state.passEmailHealth.ready ? "Email setup is ready." : "Email setup still needs attention."), !state.passEmailHealth.ready && state.passEmailHealth.domain_status !== "check_unavailable");
+    return state.passEmailHealth;
+  }
   function credentialCard(item, type) {
     var key = type === "role" ? item.role_key : item.id, label = type === "role" ? item.role_label : item.name;
     var ready = item.pin_configured, changed = type === "role" ? item.pin_changed_at : item.pin_changed_at;
@@ -100,15 +146,19 @@
       return '<tr><td>' + esc(formatWhen(row.created_at)) + '</td><td>' + esc(title(row.entity_type)) + '</td><td>' + esc(title(row.action)) + '</td><td>' + esc(title(row.actor_role)) + '</td><td>' + esc(detail || "Recorded") + '</td></tr>';
     }).join("") : '<tr><td colspan="5">No settings or access changes have been recorded yet.</td></tr>';
   }
-  function renderAll() { renderMode(); renderSummary(); renderSettings(); renderCredentials(); renderAudit(); el("change-pin-banner").hidden = !state.data.must_change_pin; }
+  function renderAll() { renderMode(); renderSummary(); renderSettings(); renderPassEmail(); renderCredentials(); renderAudit(); el("change-pin-banner").hidden = !state.data.must_change_pin; }
   async function loadData(message) {
     var results = await Promise.all([
       rpc("system_control_bootstrap",{p_session_token:state.session.session_token}),
-      rpc("system_mode_status")
+      rpc("system_mode_status"),
+      rpc("system_control_pass_email_settings",{p_session_token:state.session.session_token})
     ]);
     var data = results[0];
     if (data.status !== "success") throw new Error(data.message || "Could not load IT Administration.");
-    state.data = data; state.modeStatus = results[1]; renderAll(); if (message) toast(message);
+    if (results[2].status !== "success") throw new Error(results[2].message || "Could not load pass email settings.");
+    state.data = data; state.modeStatus = results[1]; state.passEmail = results[2]; renderAll();
+    checkPassEmailReadiness(false).catch(function () { state.passEmailHealth = null; renderPassEmailHealth(); });
+    if (message) toast(message);
   }
   function openPin(type,key,label) { state.pinTarget = {type:type,key:key,label:label}; el("pin-target-type").value = type; el("pin-target-key").value = key; el("pin-modal-title").textContent = "Change " + label + " PIN"; el("pin-target-description").textContent = "Set the shared four-digit PIN for " + label + "."; el("new-pin").value = ""; el("confirm-pin").value = ""; el("pin-modal").hidden = false; setTimeout(function () { el("new-pin").focus(); },40); }
 
@@ -154,6 +204,37 @@
         for (var i=0;i<settings.length;i++) { var result = await rpc("system_control_update_setting",{p_session_token:state.session.session_token,p_setting_key:settings[i][0],p_setting_value:settings[i][1],p_actor_name:actor}); if (result.status !== "success") throw new Error(result.message); }
         await loadData(false); toast("System settings saved.");
       } catch (error) { toast(error.message || "Settings could not be saved.",true); } finally { busy(event.currentTarget,false); }
+    });
+    el("pass-email-form").addEventListener("submit",async function (event) {
+      event.preventDefault(); busy(event.currentTarget,true,"Saving...");
+      try {
+        var adminEmails = parseEmailList(el("pass-admin-emails").value), leadershipEmails = parseEmailList(el("pass-leadership-emails").value);
+        var invalid = adminEmails.concat(leadershipEmails).find(function (email) { return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); });
+        if (invalid) throw new Error("Check this email address: " + invalid);
+        if (el("pass-email-enabled").checked && (!adminEmails.length || !leadershipEmails.length)) throw new Error("Add at least one School Administration and one Student Leadership recipient before enabling email.");
+        if (el("pass-email-enabled").checked) {
+          var health = await checkPassEmailReadiness(false);
+          if (!health.resend_key_configured) throw new Error("The RESEND_API_KEY secret is missing. Complete step 2, then use Check setup.");
+          if (health.domain_status !== "verified" && health.domain_status !== "check_unavailable") throw new Error("The amfcc.ac.zw sender domain is not verified. Complete step 1, then use Check setup.");
+          if (!(state.passEmail || {}).automatic_dispatch_ready) throw new Error("The automatic mail worker is not ready. Ask IT to apply the latest database update.");
+          if (health.domain_status === "check_unavailable" && !window.confirm("The mail key is installed, but this restricted key cannot check the domain. Have you confirmed that amfcc.ac.zw says Verified in Resend?")) return;
+        }
+        var result = await rpc("system_control_update_pass_email_settings",{
+          p_session_token:state.session.session_token,
+          p_enabled:el("pass-email-enabled").checked,
+          p_admin_emails:adminEmails,
+          p_student_leadership_emails:leadershipEmails,
+          p_actor_name:requireActor()
+        });
+        if (result.status !== "success") throw new Error(result.message || "Pass email settings could not be saved.");
+        await loadData(false); toast("Pass email settings saved.");
+      } catch (error) { toast(error.message || "Pass email settings could not be saved.",true); } finally { busy(event.currentTarget,false); }
+    });
+    el("check-pass-email").addEventListener("click",async function () {
+      var button = this, original = button.textContent; button.textContent = "Checking..."; button.disabled = true;
+      try { await checkPassEmailReadiness(true); }
+      catch (error) { toast(error.message || "The email setup check failed.",true); }
+      finally { button.textContent = original; button.disabled = false; }
     });
     el("department-search").addEventListener("input",function () { var q = this.value.trim().toLowerCase(); all("#department-credentials .credential-card").forEach(function (card) { card.hidden = q && card.dataset.search.indexOf(q) < 0; }); });
     el("close-pin-modal").addEventListener("click",function () { el("pin-modal").hidden = true; });

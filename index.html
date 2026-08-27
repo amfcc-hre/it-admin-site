@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#123b32">
   <title>AMFCC IT Administration</title>
-  <link rel="stylesheet" href="it-admin.css?v=1.0">
-  <link rel="stylesheet" href="it-admin-fixes.css?v=1.1">
+  <link rel="stylesheet" href="it-admin.css?v=1.3">
+  <link rel="stylesheet" href="it-admin-fixes.css?v=1.2">
 </head>
 <body>
   <div id="toast" class="toast" hidden role="status" aria-live="polite"></div>
@@ -52,6 +52,7 @@
         <button class="active" data-view="overview" type="button">Overview</button>
         <button data-view="modes" type="button">Operating mode</button>
         <button data-view="settings" type="button">System settings</button>
+        <button data-view="notifications" type="button">Pass email</button>
         <button data-view="access" type="button">PIN access</button>
         <button data-view="library" type="button">Library setup</button>
         <button data-view="audit" type="button">Audit history</button>
@@ -79,7 +80,8 @@
               <div class="quick-actions">
                 <button class="button secondary jump-view" data-view="modes" type="button">Change operating mode</button>
                 <button class="button secondary jump-view" data-view="access" type="button">Manage PINs</button>
-                <a class="button secondary" href="../library/">Open Library system</a>
+                <button class="button secondary jump-view" data-view="notifications" type="button">Configure pass email</button>
+                <a class="button secondary" href="https://amfcc-hre.github.io/library-site/" target="_blank" rel="noopener">Open Library system</a>
               </div>
             </article>
           </div>
@@ -121,6 +123,33 @@
           </form>
         </section>
 
+        <section id="view-notifications" class="view" aria-labelledby="notifications-title">
+          <div class="view-heading"><div><p class="eyebrow">Gate-pass communication</p><h2 id="notifications-title">Pass email notifications</h2><p>Send pass submissions and status updates to School Administration, Student Leadership, and the student who submitted the request.</p></div></div>
+          <article class="panel email-setup-panel">
+            <div class="panel-heading"><div><h3>Set up email in this order</h3><p>The system will send from <strong>it@amfcc.ac.zw</strong>. The mailbox password is never used here.</p></div><button id="check-pass-email" class="button secondary" type="button">Check setup</button></div>
+            <ol class="setup-steps">
+              <li><span>1</span><div><strong>Verify amfcc.ac.zw in Resend</strong><p>Add the DKIM and SPF records Resend gives you to the school DNS, then wait until the domain says Verified.</p><a href="https://resend.com/domains" target="_blank" rel="noopener">Open Resend domains</a></div></li>
+              <li><span>2</span><div><strong>Add the protected mail key in Supabase</strong><p>Create a Resend API key. In Supabase Edge Function secrets, add it with the exact name <code>RESEND_API_KEY</code>. Never put it in GitHub or this form.</p><a href="https://supabase.com/dashboard/project/sanabhuogxfpjstftoxt/settings/functions" target="_blank" rel="noopener">Open Supabase Function secrets</a></div></li>
+              <li><span>3</span><div><strong>Add recipients and enable</strong><p>Enter at least one School Administration address and one Student Leadership address below. Students provide their own address when submitting a pass.</p></div></li>
+            </ol>
+            <div class="email-readiness-grid">
+              <div><span>Mail key</span><strong id="pass-secret-status">Not checked</strong></div>
+              <div><span>Sender domain</span><strong id="pass-domain-status">Not checked</strong></div>
+              <div><span>Automatic worker</span><strong id="pass-scheduler-status">Checking</strong></div>
+              <div><span>Mail queue</span><strong id="pass-queue-status">Checking</strong></div>
+            </div>
+          </article>
+          <form id="pass-email-form" class="panel form-grid">
+            <label>Sender address<input id="pass-email-from" type="email" value="it@amfcc.ac.zw" readonly></label>
+            <label class="toggle"><span><strong>Automatic pass email</strong><small>Only enable this after the school domain and mail service key are configured.</small></span><input id="pass-email-enabled" type="checkbox"></label>
+            <label>School Administration recipients<textarea id="pass-admin-emails" rows="5" inputmode="email" autocomplete="off" placeholder="One email per line, or separate with commas"></textarea></label>
+            <label>Student Leadership recipients<textarea id="pass-leadership-emails" rows="5" inputmode="email" autocomplete="off" placeholder="One email per line, or separate with commas"></textarea></label>
+            <div id="pass-email-state" class="notice info span-2"></div>
+            <div class="notice warning span-2"><strong>Safe test:</strong> save the real staff recipients, use Check setup, enable email, then submit one test pass with an address you can access. Change its status once and confirm both messages arrive.</div>
+            <div class="span-2 form-actions"><button class="button primary" type="submit">Save pass email settings</button></div>
+          </form>
+        </section>
+
         <section id="view-access" class="view" aria-labelledby="access-title">
           <div class="view-heading"><div><p class="eyebrow">IT Administrator only</p><h2 id="access-title">PIN access</h2><p>Change any system-role or department PIN. Existing sessions expire normally.</p></div></div>
           <article class="panel">
@@ -144,7 +173,7 @@
             <article class="panel">
               <h3>2. Open the empty catalogue</h3>
               <p>Library staff can then add titles and barcoded copies, issue books, return or renew loans, and export reports.</p>
-              <a class="button secondary" href="../library/">Open Library system</a>
+              <a class="button secondary" href="https://amfcc-hre.github.io/library-site/" target="_blank" rel="noopener">Open Library system</a>
             </article>
           </div>
           <article class="panel">
@@ -184,6 +213,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="shared_config.js"></script>
   <script src="shared_supabase.js"></script>
-  <script src="it-admin.js?v=1.1"></script>
+  <script src="it-admin.js?v=1.3"></script>
 </body>
 </html>
