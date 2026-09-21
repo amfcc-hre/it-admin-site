@@ -52,6 +52,7 @@
         <button class="active" data-view="overview" type="button">Overview</button>
         <button data-view="modes" type="button">Operating mode</button>
         <button data-view="settings" type="button">System settings</button>
+        <button data-view="enrolment" type="button">Term enrolment</button>
         <button data-view="notifications" type="button">Pass email</button>
         <button data-view="access" type="button">PIN access</button>
         <button data-view="library" type="button">Library setup</button>
@@ -80,6 +81,7 @@
               <div class="quick-actions">
                 <button class="button secondary jump-view" data-view="modes" type="button">Change operating mode</button>
                 <button class="button secondary jump-view" data-view="access" type="button">Manage PINs</button>
+                <button class="button secondary jump-view" data-view="enrolment" type="button">Manage term enrolment</button>
                 <button class="button secondary jump-view" data-view="notifications" type="button">Configure pass email</button>
                 <a class="button secondary" href="https://amfcc-hre.github.io/library-site/" target="_blank" rel="noopener">Open Library system</a>
               </div>
@@ -123,6 +125,21 @@
           </form>
         </section>
 
+        <section id="view-enrolment" class="view" aria-labelledby="enrolment-title">
+          <div class="view-heading"><div><p class="eyebrow">Student Services control</p><h2 id="enrolment-title">Term enrolment</h2><p>Opening enrolment creates the Term Enrolment tile in Student Services. The switch is authoritative even outside the normal month window.</p></div><a class="button secondary" href="https://amfcc-hre.github.io/amfcc_student_services/administration/" target="_blank" rel="noopener">Open Administration Staff</a></div>
+          <div id="enrolment-summary" class="summary-grid"></div>
+          <article class="panel">
+            <div class="panel-heading"><div><h3>Enrolment availability</h3><p id="enrolment-state">Loading current term…</p></div><span id="enrolment-state-pill" class="mini-pill pending">Checking</span></div>
+            <form id="enrolment-form" class="form-grid">
+              <label>Academic year<input id="enrolment-year" type="number" min="2020" max="2100" required></label>
+              <label>Term<select id="enrolment-term"><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></label>
+              <div class="span-2 enrolment-window"><strong id="enrolment-window-title">Normal Term 1 window</strong><span id="enrolment-window-copy">January and February</span></div>
+              <div class="span-2 enrolment-actions"><button class="button primary" data-enrolment-action="open" type="button">Open student enrolment</button><button class="button warning" data-enrolment-action="close" type="button">Close student enrolment</button><button class="button secondary" data-enrolment-action="refresh_expected" type="button">Refresh expected students</button></div>
+            </form>
+          </article>
+          <article class="panel table-wrap"><table><thead><tr><th>Student</th><th>Registration</th><th>Status</th><th>Submitted</th></tr></thead><tbody id="enrolment-rows"></tbody></table></article>
+        </section>
+
         <section id="view-notifications" class="view" aria-labelledby="notifications-title">
           <div class="view-heading"><div><p class="eyebrow">Gate-pass communication</p><h2 id="notifications-title">Pass email notifications</h2><p>Send pass submissions and status updates to School Administration, Student Leadership, and the student who submitted the request.</p></div></div>
           <article class="panel email-setup-panel">
@@ -153,7 +170,7 @@
         <section id="view-access" class="view" aria-labelledby="access-title">
           <div class="view-heading"><div><p class="eyebrow">IT Administrator only</p><h2 id="access-title">PIN access</h2><p>Change any system-role or department PIN. Existing sessions expire normally.</p></div></div>
           <article class="panel">
-            <div class="panel-heading"><div><h3>System roles</h3><p>Library Staff is disabled until its first PIN is set.</p></div></div>
+            <div class="panel-heading"><div><h3>System roles</h3><p>Administration Staff and Library Staff remain disabled until their first PIN is set.</p></div></div>
             <div id="role-credentials" class="credential-grid"></div>
           </article>
           <article class="panel">
