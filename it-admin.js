@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var state = { client: null, session: null, data: null, modeStatus: null, passEmail: null, passEmailHealth: null, toastTimer: null, pinTarget: null };
+  var state = { client: null, session: null, data: null, modeStatus: null, passEmail: null, passEmailHealth: null, enrolment: null, toastTimer: null, pinTarget: null };
   function el(id) { return document.getElementById(id); }
   function all(selector, root) { return Array.prototype.slice.call((root || document).querySelectorAll(selector)); }
   function esc(value) { return String(value == null ? "" : value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;"); }
@@ -34,7 +34,7 @@
   function restoreSession() { try { var raw = sessionStorage.getItem("amfcc_it_admin_session"); if (!raw) return false; state.session = JSON.parse(raw); return !!state.session.session_token; } catch (e) { sessionStorage.removeItem("amfcc_it_admin_session"); return false; } }
   function showLogin() { el("login-screen").hidden = false; el("app-shell").hidden = true; el("login-pin").value = ""; }
   function showApp() { el("login-screen").hidden = true; el("app-shell").hidden = false; }
-  async function signOut(server) { if (server !== false && state.session) { try { await rpc("system_control_logout",{p_session_token:state.session.session_token}); } catch (e) {} } state.session = null; state.data = null; state.passEmail = null; state.passEmailHealth = null; sessionStorage.removeItem("amfcc_it_admin_session"); showLogin(); }
+  async function signOut(server) { if (server !== false && state.session) { try { await rpc("system_control_logout",{p_session_token:state.session.session_token}); } catch (e) {} } state.session = null; state.data = null; state.passEmail = null; state.passEmailHealth = null; state.enrolment = null; sessionStorage.removeItem("amfcc_it_admin_session"); showLogin(); }
 
   function switchView(view) {
     all(".view").forEach(function (node) { node.classList.toggle("active",node.id === "view-" + view); });
@@ -146,7 +146,49 @@
       return '<tr><td>' + esc(formatWhen(row.created_at)) + '</td><td>' + esc(title(row.entity_type)) + '</td><td>' + esc(title(row.action)) + '</td><td>' + esc(title(row.actor_role)) + '</td><td>' + esc(detail || "Recorded") + '</td></tr>';
     }).join("") : '<tr><td colspan="5">No settings or access changes have been recorded yet.</td></tr>';
   }
-  function renderAll() { renderMode(); renderSummary(); renderSettings(); renderPassEmail(); renderCredentials(); renderAudit(); el("change-pin-banner").hidden = !state.data.must_change_pin; }
+  function updateEnrolmentWindow() {
+    var term = Number(el("enrolment-term").value || 1);
+    var windows = {1:"January and February",2:"May",3:"September and October"};
+    el("enrolment-window-title").textContent = "Normal Term " + term + " window";
+    el("enrolment-window-copy").textContent = windows[term];
+  }
+  function renderEnrolment() {
+    var result = state.enrolment;
+    if (!result || result.status !== "success") {
+      el("enrolment-state").textContent = result && result.message || "Term enrolment is temporarily unavailable.";
+      el("enrolment-state-pill").textContent = "Unavailable";
+      el("enrolment-state-pill").className = "mini-pill pending";
+      el("enrolment-summary").innerHTML = "";
+      el("enrolment-rows").innerHTML = '<tr><td colspan="4">Could not load term enrolment.</td></tr>';
+      return;
+    }
+    var term = result.selected_term || {}, summary = result.summary || {};
+    el("enrolment-year").value = term.academic_year || new Date().getFullYear();
+    el("enrolment-term").value = term.term_number || 1;
+    updateEnrolmentWindow();
+    el("enrolment-state").textContent = (term.term_name || "Selected term") + " is " + (term.registration_is_open ? "open to students." : "closed to students.");
+    el("enrolment-state-pill").textContent = term.registration_is_open ? "OPEN" : "CLOSED";
+    el("enrolment-state-pill").className = "mini-pill " + (term.registration_is_open ? "ready" : "pending");
+    el("enrolment-summary").innerHTML = [[summary.expected||0,"Expected"],[summary.submitted||0,"Submitted"],[summary.not_started||0,"Not started"],[summary.completed||0,"Completed"]].map(function (item) { return '<article class="summary-card"><strong>' + item[0] + '</strong><span>' + item[1] + '</span></article>'; }).join("");
+    el("enrolment-rows").innerHTML = (result.registrations || []).map(function (row) {
+      var status = row.completed_at ? "completed" : row.student_submitted_at ? "submitted" : row.student_started_at ? "started" : "not_started";
+      return '<tr><td><strong>' + esc(row.student_name) + '</strong></td><td>' + esc(row.registration_number) + '</td><td><span class="enrolment-status ' + status + '">' + esc(row.status_label) + '</span></td><td>' + esc(formatWhen(row.student_submitted_at)) + '</td></tr>';
+    }).join("") || '<tr><td colspan="4">No expected students are listed for this term yet.</td></tr>';
+  }
+  async function manageEnrolment(action, button) {
+    var year = Number(el("enrolment-year").value), term = Number(el("enrolment-term").value), actor = requireActor();
+    var verb = action === "open" ? "Open" : action === "close" ? "Close" : "Refresh";
+    if (!window.confirm(verb + " Term " + term + " " + year + " enrolment?")) return;
+    var label = button.textContent; button.disabled = true; button.textContent = "Applying...";
+    try {
+      var result = await rpc("registration_admin_manage_term",{p_session_token:state.session.session_token,p_academic_year:year,p_term_number:term,p_action:action,p_actor_name:actor});
+      if (result.status !== "success") throw new Error(result.message || "Term enrolment was not changed.");
+      state.enrolment = await rpc("registration_admin_bootstrap",{p_session_token:state.session.session_token,p_term_id:result.term_id});
+      renderEnrolment(); toast(result.term_name + " enrolment updated.");
+    } catch (error) { toast(error.message || "Term enrolment was not changed.",true); }
+    finally { button.disabled = false; button.textContent = label; }
+  }
+  function renderAll() { renderMode(); renderSummary(); renderSettings(); renderPassEmail(); renderCredentials(); renderEnrolment(); renderAudit(); el("change-pin-banner").hidden = !state.data.must_change_pin; }
   async function loadData(message) {
     var results = await Promise.all([
       rpc("system_control_bootstrap",{p_session_token:state.session.session_token}),
@@ -156,7 +198,10 @@
     var data = results[0];
     if (data.status !== "success") throw new Error(data.message || "Could not load IT Administration.");
     if (results[2].status !== "success") throw new Error(results[2].message || "Could not load pass email settings.");
-    state.data = data; state.modeStatus = results[1]; state.passEmail = results[2]; renderAll();
+    state.data = data; state.modeStatus = results[1]; state.passEmail = results[2];
+    try { state.enrolment = await rpc("registration_admin_bootstrap",{p_session_token:state.session.session_token,p_term_id:null}); }
+    catch (error) { state.enrolment = {status:"error",message:error.message}; }
+    renderAll();
     checkPassEmailReadiness(false).catch(function () { state.passEmailHealth = null; renderPassEmailHealth(); });
     if (message) toast(message);
   }
@@ -237,6 +282,8 @@
       finally { button.textContent = original; button.disabled = false; }
     });
     el("department-search").addEventListener("input",function () { var q = this.value.trim().toLowerCase(); all("#department-credentials .credential-card").forEach(function (card) { card.hidden = q && card.dataset.search.indexOf(q) < 0; }); });
+    el("enrolment-term").addEventListener("change",updateEnrolmentWindow);
+    all("[data-enrolment-action]").forEach(function (button) { button.addEventListener("click",function () { manageEnrolment(button.dataset.enrolmentAction,button); }); });
     el("close-pin-modal").addEventListener("click",function () { el("pin-modal").hidden = true; });
     el("pin-modal").addEventListener("click",function (event) { if (event.target === el("pin-modal")) el("pin-modal").hidden = true; });
     el("pin-form").addEventListener("submit",async function (event) {
