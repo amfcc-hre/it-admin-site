@@ -181,3 +181,4 @@ td{font-size:.9rem}
 @media (max-width:720px) {
   .email-readiness-grid { grid-template-columns: 1fr; }
 }
+.enrolment-window{display:flex;justify-content:space-between;gap:12px;padding:14px;border-radius:12px;background:#eef4fb;color:#173a63}.enrolment-actions{display:flex;gap:9px;flex-wrap:wrap}.enrolment-status{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:.78rem;font-weight:800;background:#eef1f4}.enrolment-status.submitted,.enrolment-status.completed{background:#e6f6eb;color:#11653b}.enrolment-status.started,.enrolment-status.waiting{background:#fff2dd;color:#8a5300}@media(max-width:620px){.enrolment-window{display:grid}.enrolment-actions .button{width:100%}}
