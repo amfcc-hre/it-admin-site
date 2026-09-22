@@ -85,13 +85,14 @@
   }
   function renderPassEmail() {
     var config = state.passEmail || {};
-    var adminEmails = config.admin_emails || [], leadershipEmails = config.student_leadership_emails || [];
+    var adminEmails = config.admin_emails || [], managementEmails = config.management_emails || [], leadershipEmails = config.student_leadership_emails || [];
     el("pass-email-from").value = config.from_email || "it@amfcc.ac.zw";
     el("pass-email-enabled").checked = !!config.enabled;
     el("pass-admin-emails").value = adminEmails.join("\n");
+    el("pass-management-emails").value = managementEmails.join("\n");
     el("pass-leadership-emails").value = leadershipEmails.join("\n");
     el("pass-email-state").innerHTML = config.enabled
-      ? "<strong>Automatic email is enabled.</strong> Future pass submissions and every status change will be queued for " + esc(adminEmails.length) + " School Administration and " + esc(leadershipEmails.length) + " Student Leadership recipient" + (leadershipEmails.length === 1 ? "." : "s.")
+      ? "<strong>Automatic email is enabled.</strong> Future pass submissions and status changes will be queued separately for " + esc(adminEmails.length) + " School Administration, " + esc(managementEmails.length) + " Management, and " + esc(leadershipEmails.length) + " Student Leadership recipient" + (leadershipEmails.length === 1 ? "." : "s.")
       : "<strong>Automatic email is off.</strong> Complete the three setup steps, enter recipients, and use Check setup before enabling it.";
     el("pass-scheduler-status").textContent = config.automatic_dispatch_ready ? "Ready" : "Not ready";
     el("pass-scheduler-status").className = config.automatic_dispatch_ready ? "ready-text" : "warning-text";
@@ -253,10 +254,10 @@
     el("pass-email-form").addEventListener("submit",async function (event) {
       event.preventDefault(); busy(event.currentTarget,true,"Saving...");
       try {
-        var adminEmails = parseEmailList(el("pass-admin-emails").value), leadershipEmails = parseEmailList(el("pass-leadership-emails").value);
-        var invalid = adminEmails.concat(leadershipEmails).find(function (email) { return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); });
+        var adminEmails = parseEmailList(el("pass-admin-emails").value), managementEmails = parseEmailList(el("pass-management-emails").value), leadershipEmails = parseEmailList(el("pass-leadership-emails").value);
+        var invalid = adminEmails.concat(managementEmails,leadershipEmails).find(function (email) { return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); });
         if (invalid) throw new Error("Check this email address: " + invalid);
-        if (el("pass-email-enabled").checked && (!adminEmails.length || !leadershipEmails.length)) throw new Error("Add at least one School Administration and one Student Leadership recipient before enabling email.");
+        if (el("pass-email-enabled").checked && (!adminEmails.length || !managementEmails.length || !leadershipEmails.length)) throw new Error("Add at least one School Administration, Management, and Student Leadership recipient before enabling email.");
         if (el("pass-email-enabled").checked) {
           var health = await checkPassEmailReadiness(false);
           if (!health.resend_key_configured) throw new Error("The RESEND_API_KEY secret is missing. Complete step 2, then use Check setup.");
@@ -268,6 +269,7 @@
           p_session_token:state.session.session_token,
           p_enabled:el("pass-email-enabled").checked,
           p_admin_emails:adminEmails,
+          p_management_emails:managementEmails,
           p_student_leadership_emails:leadershipEmails,
           p_actor_name:requireActor()
         });
