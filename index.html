@@ -141,13 +141,13 @@
         </section>
 
         <section id="view-notifications" class="view" aria-labelledby="notifications-title">
-          <div class="view-heading"><div><p class="eyebrow">Gate-pass communication</p><h2 id="notifications-title">Pass email notifications</h2><p>Send pass submissions and status updates to School Administration, Student Leadership, and the student who submitted the request.</p></div></div>
+          <div class="view-heading"><div><p class="eyebrow">Gate-pass communication</p><h2 id="notifications-title">Pass email notifications</h2><p>Send separate approval alerts to School Administration and Management, plus status updates to Student Leadership and the student who submitted the request.</p></div></div>
           <article class="panel email-setup-panel">
             <div class="panel-heading"><div><h3>Set up email in this order</h3><p>The system will send from <strong>it@amfcc.ac.zw</strong>. The mailbox password is never used here.</p></div><button id="check-pass-email" class="button secondary" type="button">Check setup</button></div>
             <ol class="setup-steps">
               <li><span>1</span><div><strong>Verify amfcc.ac.zw in Resend</strong><p>Add the DKIM and SPF records Resend gives you to the school DNS, then wait until the domain says Verified.</p><a href="https://resend.com/domains" target="_blank" rel="noopener">Open Resend domains</a></div></li>
               <li><span>2</span><div><strong>Add the protected mail key in Supabase</strong><p>Create a Resend API key. In Supabase Edge Function secrets, add it with the exact name <code>RESEND_API_KEY</code>. Never put it in GitHub or this form.</p><a href="https://supabase.com/dashboard/project/sanabhuogxfpjstftoxt/settings/functions" target="_blank" rel="noopener">Open Supabase Function secrets</a></div></li>
-              <li><span>3</span><div><strong>Add recipients and enable</strong><p>Enter at least one School Administration address and one Student Leadership address below. Students provide their own address when submitting a pass.</p></div></li>
+              <li><span>3</span><div><strong>Add recipients and enable</strong><p>Enter at least one School Administration, Management, and Student Leadership address below. Students provide their own address when submitting a pass.</p></div></li>
             </ol>
             <div class="email-readiness-grid">
               <div><span>Mail key</span><strong id="pass-secret-status">Not checked</strong></div>
@@ -160,6 +160,7 @@
             <label>Sender address<input id="pass-email-from" type="email" value="it@amfcc.ac.zw" readonly></label>
             <label class="toggle"><span><strong>Automatic pass email</strong><small>Only enable this after the school domain and mail service key are configured.</small></span><input id="pass-email-enabled" type="checkbox"></label>
             <label>School Administration recipients<textarea id="pass-admin-emails" rows="5" inputmode="email" autocomplete="off" placeholder="One email per line, or separate with commas"></textarea></label>
+            <label>Management approval recipients<textarea id="pass-management-emails" rows="5" inputmode="email" autocomplete="off" placeholder="Principal, Dean or Director email addresses"></textarea></label>
             <label>Student Leadership recipients<textarea id="pass-leadership-emails" rows="5" inputmode="email" autocomplete="off" placeholder="One email per line, or separate with commas"></textarea></label>
             <div id="pass-email-state" class="notice info span-2"></div>
             <div class="notice warning span-2"><strong>Safe test:</strong> save the real staff recipients, use Check setup, enable email, then submit one test pass with an address you can access. Change its status once and confirm both messages arrive.</div>
@@ -230,6 +231,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="shared_config.js"></script>
   <script src="shared_supabase.js"></script>
-  <script src="it-admin.js?v=1.3"></script>
+  <script src="it-admin.js?v=1.4"></script>
 </body>
 </html>
