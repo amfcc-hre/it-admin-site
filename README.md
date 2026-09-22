@@ -33,7 +33,7 @@ Names entered in the audit field identify who made a change. They are not indivi
 - Change every department PIN.
 - Enable Library Staff access by setting its first PIN.
 - Change paper-pass pilot settings, pilot dates, kiosk result duration and the school time zone.
-- Configure School Administration and Student Leadership recipients for gate-pass email.
+- Configure separate School Administration, Management and Student Leadership recipients for gate-pass email.
 - Turn automatic pass email on or off after the mail service is ready.
 - Review the audit history for settings and PIN changes.
 - Open the Library system from the setup section.
