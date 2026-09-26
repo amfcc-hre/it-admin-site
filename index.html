@@ -141,7 +141,7 @@
         </section>
 
         <section id="view-notifications" class="view" aria-labelledby="notifications-title">
-          <div class="view-heading"><div><p class="eyebrow">Gate-pass communication</p><h2 id="notifications-title">Pass email notifications</h2><p>Send separate approval alerts to School Administration and Management, plus status updates to Student Leadership and the student who submitted the request.</p></div></div>
+          <div class="view-heading"><div><p class="eyebrow">Gate-pass communication</p><h2 id="notifications-title">Pass email notifications</h2><p>Send action-required alerts to School Administration and Management. Approval outcomes go to Student Leadership and the applicant. Departure and return events do not send email.</p></div></div>
           <article class="panel email-setup-panel">
             <div class="panel-heading"><div><h3>Set up email in this order</h3><p>The system will send from <strong>it@amfcc.ac.zw</strong>. The mailbox password is never used here.</p></div><button id="check-pass-email" class="button secondary" type="button">Check setup</button></div>
             <ol class="setup-steps">
@@ -163,7 +163,7 @@
             <label>Management approval recipients<textarea id="pass-management-emails" rows="5" inputmode="email" autocomplete="off" placeholder="Principal, Dean or Director email addresses"></textarea></label>
             <label>Student Leadership recipients<textarea id="pass-leadership-emails" rows="5" inputmode="email" autocomplete="off" placeholder="One email per line, or separate with commas"></textarea></label>
             <div id="pass-email-state" class="notice info span-2"></div>
-            <div class="notice warning span-2"><strong>Safe test:</strong> save the real staff recipients, use Check setup, enable email, then submit one test pass with an address you can access. Change its status once and confirm both messages arrive.</div>
+            <div class="notice warning span-2"><strong>Safe test:</strong> save the real staff recipients, use Check setup, enable email, then submit one test pass with an address you can access. Confirm the action-required messages arrive, approve the pass, and confirm the applicant and Student Leadership receive the outcome.</div>
             <div class="span-2 form-actions"><button class="button primary" type="submit">Save pass email settings</button></div>
           </form>
         </section>
@@ -231,6 +231,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="shared_config.js"></script>
   <script src="shared_supabase.js"></script>
-  <script src="it-admin.js?v=1.4"></script>
+  <script src="it-admin.js?v=1.5"></script>
 </body>
 </html>
