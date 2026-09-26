@@ -92,7 +92,7 @@
     el("pass-management-emails").value = managementEmails.join("\n");
     el("pass-leadership-emails").value = leadershipEmails.join("\n");
     el("pass-email-state").innerHTML = config.enabled
-      ? "<strong>Automatic email is enabled.</strong> Future pass submissions and status changes will be queued separately for " + esc(adminEmails.length) + " School Administration, " + esc(managementEmails.length) + " Management, and " + esc(leadershipEmails.length) + " Student Leadership recipient" + (leadershipEmails.length === 1 ? "." : "s.")
+      ? "<strong>Automatic email is enabled.</strong> Action-required alerts will go to " + esc(adminEmails.length) + " School Administration and " + esc(managementEmails.length) + " Management recipient(s). Approval outcomes will go to " + esc(leadershipEmails.length) + " Student Leadership recipient(s) and the applicant. Departure and return events will not send email."
       : "<strong>Automatic email is off.</strong> Complete the three setup steps, enter recipients, and use Check setup before enabling it.";
     el("pass-scheduler-status").textContent = config.automatic_dispatch_ready ? "Ready" : "Not ready";
     el("pass-scheduler-status").className = config.automatic_dispatch_ready ? "ready-text" : "warning-text";
