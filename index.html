@@ -116,6 +116,8 @@
         <section id="view-settings" class="view" aria-labelledby="settings-title">
           <div class="view-heading"><div><p class="eyebrow">Administrator settings</p><h2 id="settings-title">System settings</h2><p>IT Administration can change every setting available to School Administration.</p></div></div>
           <form id="settings-form" class="panel form-grid">
+            <label class="toggle"><span><strong>Meal check-in</strong><small>Allow students to join Kitchen preparation counts.</small></span><input id="meal-checkin-enabled" type="checkbox"></label>
+            <label class="toggle"><span><strong>Meal collection</strong><small>Allow students and Kitchen to record meal collection.</small></span><input id="meal-collection-enabled" type="checkbox"></label>
             <label class="toggle span-2"><span><strong>Paper pass pilot mode</strong><small>Run electronic gate passes alongside paper passes.</small></span><input id="pilot-mode" type="checkbox"></label>
             <label>Pilot start date and time<input id="pilot-start" type="datetime-local"></label>
             <label>Pilot end date and time<input id="pilot-end" type="datetime-local"></label>
@@ -141,7 +143,7 @@
         </section>
 
         <section id="view-notifications" class="view" aria-labelledby="notifications-title">
-          <div class="view-heading"><div><p class="eyebrow">Gate-pass communication</p><h2 id="notifications-title">Pass email notifications</h2><p>Send action-required alerts to School Administration and Management. Approval outcomes go to Student Leadership and the applicant. Departure and return events do not send email.</p></div></div>
+          <div class="view-heading"><div><p class="eyebrow">Gate-pass communication</p><h2 id="notifications-title">Pass email notifications</h2><p>Send separate approval alerts to School Administration and Management, plus status updates to Student Leadership and the student who submitted the request.</p></div></div>
           <article class="panel email-setup-panel">
             <div class="panel-heading"><div><h3>Set up email in this order</h3><p>The system will send from <strong>it@amfcc.ac.zw</strong>. The mailbox password is never used here.</p></div><button id="check-pass-email" class="button secondary" type="button">Check setup</button></div>
             <ol class="setup-steps">
@@ -163,7 +165,7 @@
             <label>Management approval recipients<textarea id="pass-management-emails" rows="5" inputmode="email" autocomplete="off" placeholder="Principal, Dean or Director email addresses"></textarea></label>
             <label>Student Leadership recipients<textarea id="pass-leadership-emails" rows="5" inputmode="email" autocomplete="off" placeholder="One email per line, or separate with commas"></textarea></label>
             <div id="pass-email-state" class="notice info span-2"></div>
-            <div class="notice warning span-2"><strong>Safe test:</strong> save the real staff recipients, use Check setup, enable email, then submit one test pass with an address you can access. Confirm the action-required messages arrive, approve the pass, and confirm the applicant and Student Leadership receive the outcome.</div>
+            <div class="notice warning span-2"><strong>Safe test:</strong> save the real staff recipients, use Check setup, enable email, then submit one test pass with an address you can access. Change its status once and confirm both messages arrive.</div>
             <div class="span-2 form-actions"><button class="button primary" type="submit">Save pass email settings</button></div>
           </form>
         </section>

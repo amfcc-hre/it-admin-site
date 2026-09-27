@@ -74,6 +74,8 @@
   }
   function renderSettings() {
     var s = state.data.settings || {};
+    el("meal-checkin-enabled").checked = !!s.meal_check_in_enabled;
+    el("meal-collection-enabled").checked = !!s.meal_collection_enabled;
     el("pilot-mode").checked = !!s.gate_pass_pilot_mode;
     el("pilot-start").value = datetimeLocal(s.gate_pass_pilot_started_at);
     el("pilot-end").value = datetimeLocal(s.gate_pass_pilot_ends_at);
@@ -92,7 +94,7 @@
     el("pass-management-emails").value = managementEmails.join("\n");
     el("pass-leadership-emails").value = leadershipEmails.join("\n");
     el("pass-email-state").innerHTML = config.enabled
-      ? "<strong>Automatic email is enabled.</strong> Action-required alerts will go to " + esc(adminEmails.length) + " School Administration and " + esc(managementEmails.length) + " Management recipient(s). Approval outcomes will go to " + esc(leadershipEmails.length) + " Student Leadership recipient(s) and the applicant. Departure and return events will not send email."
+      ? "<strong>Automatic email is enabled.</strong> Future pass submissions and status changes will be queued separately for " + esc(adminEmails.length) + " School Administration, " + esc(managementEmails.length) + " Management, and " + esc(leadershipEmails.length) + " Student Leadership recipient" + (leadershipEmails.length === 1 ? "." : "s.")
       : "<strong>Automatic email is off.</strong> Complete the three setup steps, enter recipients, and use Check setup before enabling it.";
     el("pass-scheduler-status").textContent = config.automatic_dispatch_ready ? "Ready" : "Not ready";
     el("pass-scheduler-status").className = config.automatic_dispatch_ready ? "ready-text" : "warning-text";
@@ -248,6 +250,8 @@
           ["school_timezone",el("school-timezone").value.trim()]
         ];
         for (var i=0;i<settings.length;i++) { var result = await rpc("system_control_update_setting",{p_session_token:state.session.session_token,p_setting_key:settings[i][0],p_setting_value:settings[i][1],p_actor_name:actor}); if (result.status !== "success") throw new Error(result.message); }
+        var mealResult = await rpc("system_control_set_meal_features",{p_session_token:state.session.session_token,p_check_in_enabled:el("meal-checkin-enabled").checked,p_collection_enabled:el("meal-collection-enabled").checked,p_actor_name:actor});
+        if (mealResult.status !== "success") throw new Error(mealResult.message || "Meal controls could not be saved.");
         await loadData(false); toast("System settings saved.");
       } catch (error) { toast(error.message || "Settings could not be saved.",true); } finally { busy(event.currentTarget,false); }
     });
