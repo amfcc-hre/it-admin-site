@@ -150,8 +150,8 @@ function updateSSBtn(){
 var btn=panel.querySelector('#ssb-btn');
 if(!btn)return;
 var cbs=panel.querySelectorAll('tbody input[type=checkbox]:not(:disabled)');
-var has=true;
-cbs.forEach(function(cb){if(!cb.checked){has=false;}});
+var has=false;
+cbs.forEach(function(cb){if(cb.checked){has=true;}});
 btn.disabled=!has||cbs.length===0;
 }
 
@@ -160,7 +160,7 @@ var sac=panel.querySelector('#sa-chk');
 var cbs=panel.querySelectorAll('tbody input[type=checkbox]:not(:disabled)');
 var allChk=true;
 cbs.forEach(function(cb){if(!cb.checked){allChk=false;}});
-cbs.forEach(function(cb){cb.checked=allChk;});
+cbs.forEach(function(cb){cb.checked=!allChk;});
 updateSSBtn();
 }
 

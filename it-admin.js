@@ -44,9 +44,9 @@
     var baseLabel = baseMode === "holiday" ? "Holiday Mode" : "School Term Mode";
     if (conference) return {
       label:baseLabel + " + Conference Mode",
-      message:"The " + baseLabel + " calendar and gate-pass rules remain active. Conference Mode removes meal deadlines and manual-work sessions, and every open or new task is an Emergency with Critical priority."
+      message:"The " + baseLabel + " calendar and gate-pass rules remain active. Conference Mode disables meal check-in, meal collection and manual-work sessions. Every open or new task is an Emergency with Critical priority."
     };
-    if (baseMode === "holiday") return { label:baseLabel, message:"Manual work uses Morning and Afternoon slots. Existing Holiday Mode gate-pass rules remain active. Normal meal deadlines apply." };
+    if (baseMode === "holiday") return { label:baseLabel, message:"Manual work uses Morning and Afternoon slots. Holiday Mode gate-pass rules apply. Advance meal check-in is disabled; meal collection follows the system switch." };
     return { label:baseLabel, message:"Standard meal deadlines, gate-pass rules, and the regular manual-work session timetable apply." };
   }
   function renderMode() {
@@ -58,7 +58,7 @@
     el("mode-impact").innerHTML = "<strong>Current effect:</strong> " + esc(copy.message);
     el("current-rules").className = "panel rule-panel " + (conference ? "conference" : mode);
     el("current-rules").innerHTML = '<p class="eyebrow">' + esc(copy.label) + '</p><h3>' + esc(copy.message) + '</h3><div class="rule-list">' +
-      '<div class="rule-item"><strong>Meals</strong><span>' + (conference ? "No check-in deadline" : "Scheduled deadlines") + '</span></div>' +
+      '<div class="rule-item"><strong>Meals</strong><span>' + (conference ? "Check-in and collection disabled" : mode === "holiday" ? "Collection only" : "Scheduled check-in deadlines") + '</span></div>' +
       '<div class="rule-item"><strong>Manual work</strong><span>' + (conference ? "No sessions" : mode === "holiday" ? "Morning and Afternoon" : "Regular timetable") + '</span></div>' +
       '<div class="rule-item"><strong>Tasks</strong><span>' + (conference ? "All Emergency" : "Normal task types") + '</span></div></div>';
   }

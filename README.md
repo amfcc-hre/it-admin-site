@@ -26,6 +26,18 @@ Names entered in the audit field identify who made a change. They are not indivi
 
 ## Main capabilities
 
+### Manual data administration
+
+Open **Data administration** after signing in with the IT Administrator PIN and entering your name. The protected catalogue provides 51 record areas for students, staff, sponsors, duties, reporting configuration, operational records, fees, gate devices and Library records. Use the named form fields, searchable related-record selectors and structured additional fields. Routine entry does not require SQL, database-table access or code changes.
+
+Every write requires an operator name and a change reason. Existing records have a revision guard so another person's changes cannot be overwritten silently. The removal panel shows linked-record counts before an action. Permanent removal is blocked for referenced records, except a service-duty week can remove its own duty members. Student archive retains history, removes active membership and leadership roles, and clears current or future duties. Restore does not reinstate cleared duties. Recent IT changes appear below the record list.
+
+Gate terminal devices generate a pairing token on creation, or through **Replace pairing token**. The token is shown once, its hash is stored, and neither token nor hash is included in the audit record. Pair a browser on the Gate terminal's **Pair terminal** screen. Replacing a pairing token stops the old token immediately. Do not upload pairing tokens to GitHub or the documentation register.
+
+Backend source is in `supabase/migrations/20261003205203_it_record_administration.sql`. Apply the backend migration before publishing `record-admin.js`, `record-admin.css` and the updated `index.html`. Public wrappers use security invoker and validate IT-only sessions in the private implementation. No table grants are added.
+
+Normal report approvals, meal recording, circulation and enrolment finalisation still use their dedicated workflow screens. Data administration supplies missing entry and correction controls. System-generated audit, sessions, credentials, outboxes and document version pointers are maintained by the system.
+
 - View overall access readiness and the current operating mode.
 - Choose School Term Mode or Holiday Mode.
 - Turn Conference Mode on or off as an additional overlay.
@@ -71,7 +83,7 @@ The system always has one base calendar mode. Conference Mode is optional and ca
 | School Term Mode | Uses standard meal deadlines, gate-pass rules and the regular manual-work timetable |
 | Holiday Mode | Uses Morning and Afternoon manual-work slots and the holiday gate-pass rules |
 | Conference Mode off | The selected base mode operates normally |
-| Conference Mode on | Meal check-ins have no deadline, manual-work sessions are unavailable and active tasks are treated as Emergency tasks |
+| Conference Mode on | Meal check-in and collection are disabled, manual-work sessions are unavailable and active tasks are treated as Emergency tasks with Critical priority |
 
 Conference Mode does not replace School Term or Holiday Mode. It adds conference rules to the selected base mode.
 

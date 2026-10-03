@@ -7,6 +7,7 @@
   <title>AMFCC IT Administration</title>
   <link rel="stylesheet" href="it-admin.css?v=1.3">
   <link rel="stylesheet" href="it-admin-fixes.css?v=1.2">
+  <link rel="stylesheet" href="record-admin.css?v=1">
 </head>
 <body>
   <div id="toast" class="toast" hidden role="status" aria-live="polite"></div>
@@ -16,7 +17,7 @@
       <div class="brand-mark" aria-hidden="true">IT</div>
       <p class="eyebrow">AMFCC control centre</p>
       <h1 id="login-title">IT Administration</h1>
-      <p class="lead">Manage operating modes, system settings, access PINs, and service readiness from one protected site.</p>
+      <p class="lead">Manage records, operating modes, system settings, access PINs, and service readiness from one protected site.</p>
       <form id="login-form" class="stack">
         <label>IT Administrator PIN
           <input id="login-pin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="one-time-code" required autofocus>
@@ -234,5 +235,6 @@
   <script src="shared_config.js"></script>
   <script src="shared_supabase.js"></script>
   <script src="it-admin.js?v=1.5"></script>
+  <script src="record-admin.js?v=1"></script>
 </body>
 </html>
