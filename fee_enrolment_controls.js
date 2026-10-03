@@ -1,538 +1,231 @@
 (function() {
-  'use strict';
-
-  var AMFCC_GREEN = '#2e7d32';
-  var AMFCC_GREEN_LIGHT = '#4caf50';
-  var AMFCC_GREEN_BG = '#e8f5e9';
-  var BORDER_COLOR = '#c8e6c9';
-  var WHITE = '#ffffff';
-  var BLACK = '#212121';
-  var GRAY = '#757575';
-  var LIGHT_GRAY = '#f5f5f5';
-  var DANGER_RED = '#d32f2f';
-  var WARNING_ORANGE = '#f57c00';
-  var TEXT_SUCCESS = '#2e7d32';
-  var TEXT_ERROR = '#c62828';
-
-  function escapeHtml(str) {
-    if (typeof str !== 'string') return str;
-    return str
-      .replace(/&/g, '&amp;')
-      .replace(/'/g, '&#39;')
-      .replace(/"/g, '&quot;')
-      .replace(/=/g, '&#61;')
-      .replace(/'/g, '&#39;')
-      .replace(/`/g, '&#96;')
-      .replace(/%20/g, ' ');
-  }
-
-  var feeData = [];
-  var lastDeliveryStatuses = {};
-
-  function injectCss() {
-    var style = document.createElement('style');
-    style.textContent = '' +
-      '.amfcc-fee-panel { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; max-width: 1200px; margin: 20px auto; padding: 0 16px; }' +
-      '.amfcc-fee-panel h2 { color: ' + AMFCC_GREEN + '; border-bottom: 2px solid ' + AMFCC_GREEN + '; padding-bottom: 8px; margin: 0 0 16px 0; font-size: 20px; }' +
-      '.amfcc-fee-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }' +
-      '.amfcc-fee-toolbar input[type="text"] { padding: 6px 10px; border: 1px solid ' + BORDER_COLOR + '; border-radius: 4px; font-size: 14px; min-width: 200px; }' +
-      '.amfcc-fee-toolbar input[type="text"]:focus { outline: 2px solid ' + AMFCC_GREEN + '; border-color: ' + AMFCC_GREEN + '; }' +
-      '.amfcc-fee-toolbar button { padding: 6px 12px; border: 1px solid ' + AMFCC_GREEN + '; background: ' + AMFCC_GREEN + '; color: ' + WHITE + '; border-radius: 4px; cursor: pointer; font-size: 14px; }' +
-      '.amfcc-fee-toolbar button:hover { background: ' + AMFCC_GREEN_LIGHT + '; }' +
-      '.amfcc-fee-toolbar button:disabled { background: ' + GRAY + '; border-color: ' + GRAY + '; cursor: not-allowed; }' +
-      '.amfcc-fee-toolbar .spacer { flex: 1 1 100%; }' +
-      '.amfcc-fee-table-wrap { overflow-x: auto; border: 1px solid ' + BORDER_COLOR + '; border-radius: 4px; }' +
-      '.amfcc-fee-table { width: 100%; border-collapse: collapse; font-size: 14px; }' +
-      '.amfcc-fee-table th { background: ' + AMFCC_GREEN + '; color: ' + WHITE + '; padding: 8px 10px; text-align: left; white-space: nowrap; }' +
-      '.amfcc-fee-table td { padding: 8px 10px; border-bottom: 1px solid ' + BORDER_COLOR + '; vertical-align: middle; }' +
-      '.amfcc-fee-table tr:hover { background: ' + AMFCC_GREEN_BG + '; }' +
-      '.amfcc-fee-table tr.paid-row { background: ' + AMFCC_GREEN_BG + '; }' +
-      '.amfcc-fee-table tr.paid-row td:first-child input[type="checkbox"] { display: none; }' +
-      '.amfcc-fee-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; border: none; cursor: default; }' +
-      '.amfcc-badge-paid { background: ' + AMFCC_GREEN + '; color: ' + WHITE + '; }' +
-      '.amfcc-badge-arrears { background: ' + WARNING_ORANGE + '; color: ' + WHITE + '; }' +
-      '.amfcc-badge-not-recorded { background: ' + GRAY + '; color: ' + WHITE + '; }' +
-      '.amfcc-fee-table input[type="checkbox"] { cursor: pointer; width: 16px; height: 16px; }' +
-      '.amfcc-fee-table input[type="checkbox"]:disabled { cursor: not-allowed; opacity: 0.5; }' +
-      '.amfcc-notice-btn { padding: 3px 8px; border: 1px solid ' + AMFCC_GREEN + '; background: ' + AMFCC_GREEN + '; color: ' + WHITE + '; border-radius: 4px; cursor: pointer; font-size: 12px; }' +
-      '.amfcc-notice-btn:disabled { background: ' + GRAY + '; border-color: ' + GRAY + '; cursor: not-allowed; }' +
-      '.amfcc-fee-info-btn { padding: 3px 8px; border: 1px solid ' + AMFCC_GREEN + '; background: transparent; color: ' + AMFCC_GREEN + '; border-radius: 4px; cursor: pointer; font-size: 12px; }' +
-      '.amfcc-fee-info-btn:hover { background: ' + AMFCC_GREEN_BG + '; }' +
-      '.amfcc-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000; }' +
-      '.amfcc-modal-box { background: ' + WHITE + '; border-radius: 8px; padding: 24px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }' +
-      '.amfcc-modal-box h3 { color: ' + AMFCC_GREEN + '; margin: 0 0 16px 0; }' +
-      '.amfcc-modal-box .amfcc-modal-row { margin-bottom: 8px; font-size: 14px; }' +
-      '.amfcc-modal-box .amfcc-modal-label { font-weight: bold; color: ' + GRAY + '; }' +
-      '.amfcc-modal-box .amfcc-modal-close { margin-top: 16px; padding: 6px 16px; border: 1px solid ' + AMFCC_GREEN + '; background: ' + AMFCC_GREEN + '; color: ' + WHITE + '; border-radius: 4px; cursor: pointer; }' +
-      '.amfcc-fee-feedback { padding: 8px 12px; border-radius: 4px; margin: 8px 0; font-size: 14px; display: none; }' +
-      '.amfcc-fee-feedback.success { display: block; background: ' + AMFCC_GREEN_BG + '; color: ' + TEXT_SUCCESS + '; border: 1px solid ' + AMFCC_GREEN + '; }' +
-      '.amfcc-fee-feedback.error { display: block; background: #ffebee; color: ' + TEXT_ERROR + '; border: 1px solid ' + DANGER_RED + '; }' +
-      '@media (max-width: 768px) {' +
-      '.amfcc-fee-toolbar { flex-direction: column; align-items: stretch; }' +
-      '.amfcc-fee-table { font-size: 12px; }' +
-      '.amfcc-fee-table th, .amfcc-fee-table td { padding: 6px 8px; }' +
-      '.amfcc-fee-panel { padding: 0 8px; }' +
-      '}' +
-      '';
-    document.head.appendChild(style);
-  }
-
-  function openModal(htmlContent) {
-    var overlay = document.createElement('div');
-    overlay.className = 'amfcc-modal-overlay';
-    overlay.innerHTML =
-      '  .amfcc-modal-box h3 { color: ' + AMFCC_GREEN + '; margin: 0 0 16px 0; }' +
-      '  .amfcc-modal-box .amfcc-modal-row { margin-bottom: 8px; font-size: 14px; }' +
-      '  .amfcc-modal-box .amfcc-modal-label { font-weight: bold; color: ' + GRAY + '; }' +
-      '  .amfcc-modal-box .amfcc-modal-close { margin-top: 16px; padding: 6px 16px; border: 1px solid ' + AMFCC_GREEN + '; background: ' + AMFCC_GREEN + '; color: ' + WHITE + '; border-radius: 4px; cursor: pointer; }' +
-      '';
-    overlay.setAttribute('data-no-validate', 'true');
-    var box = document.createElement('div');
-    box.className = 'amfcc-modal-box';
-    box.innerHTML =
-      '    .amfcc-modal-box h3 { color: ' + AMFCC_GREEN + '; margin: 0 0 16px 0; }' +
-      '    .amfcc-modal-box .amfcc-modal-row { margin-bottom: 8px; font-size: 14px; }' +
-      '    .amfcc-modal-box .amfcc-modal-label { font-weight: bold; color: ' + GRAY + '; }' +
-      '    .amfcc-modal-box .amfcc-modal-close { margin-top: 16px; padding: 6px 16px; border: 1px solid ' + AMFCC_GREEN + '; background: ' + AMFCC_GREEN + '; color: ' + WHITE + '; border-radius: 4px; cursor: pointer; }' +
-      '';
-    box.innerHTML =
-      '    h3 style="color:' + AMFCC_GREEN + ';margin:0 0 16px 0">Fee Information' +
-      '    ' + htmlContent + '' +
-      '    button onclick="this.closest(\'.amfcc-modal-overlay\').remove()" style="margin-top:16px;padding:6px 16px;border:1px solid ' + AMFCC_GREEN + ';background:' + AMFCC_GREEN + ';color:' + WHITE + ';border-radius:4px;cursor:pointer">Close' +
-      '';
-    overlay.innerHTML = '';
-    overlay.appendChild(box);
-    overlay.addEventListener('click', function(e) {
-      if (e.target === overlay) overlay.remove();
-    });
-    document.body.appendChild(overlay);
-  }
-
-  function buildModalRow(label, value) {
-    return '    div style="margin-bottom:8px"' +
-      '      strong style="font-weight:bold;color:' + GRAY + '">' + escapeHtml(label) + ': ' +
-      '      span>' + escapeHtml(value) + '' +
-      '    /div';
-  }
-
-  function renderTable(data) {
-    var tableWrap = document.createElement('div');
-    tableWrap.className = 'amfcc-fee-table-wrap';
-
-    var table = document.createElement('table');
-    table.className = 'amfcc-fee-table';
-
-    var thead = document.createElement('thead');
-    thead.innerHTML = '' +
-      '    tr' +
-      '      th' +
-      '        input type="checkbox" id="amfcc-select-all" onchange="toggleAll(this)"' +
-      '      /th' +
-      '      th>Student/th' +
-      '      th>Registration/th' +
-      '      th>Balance/th' +
-      '      th>Fee information/th' +
-      '      th>Email/th' +
-      '      th>Notice/th' +
-      '    /tr';
-    table.appendChild(thead);
-
-    var tbody = document.createElement('tbody');
-
-    for (var i = 0; i data[i]) {
-      var row = data[i];
-      var tr = document.createElement('tr');
-      if (row.status === 'Paid') {
-        tr.className = 'paid-row';
-      }
-
-      var canSend = row.send_eligible === true && row.status !== 'Paid';
-      var canCheck = row.status !== 'Paid' && row.send_eligible === true;
-
-      var badgeClass = 'amfcc-badge-not-recorded';
-      var badgeText = 'NOT RECORDED';
-      if (row.status === 'Paid') {
-        badgeClass = 'amfcc-badge-paid';
-        badgeText = 'PAID';
-      } else if (row.status === 'Arrears') {
-        badgeClass = 'amfcc-badge-arrears';
-        badgeText = 'ARREARS';
-      }
-
-      var emailDisplay = row.email || 'No registration email';
-      var noticeDisplay = row.notice_text || 'No notice available';
-      var isNoEmail = !row.email;
-      var isNoNotice = !row.notice_text;
-
-      var statusDesc = row.status || 'NOT RECORDED';
-      var balanceDisplay = 'USD ' + (row.balance !== null && row.balance !== undefined ? parseFloat(row.balance).toFixed(2) : '0.00');
-
-      var lastDeliver = lastDeliveryStatuses[row.id] || { status: 'N/A', time: 'N/A' };
-
-      var noticeHtml = '';
-      if (isNoEmail || isNoNotice) {
-        noticeHtml = '    span style="color:' + GRAY + ';font-size:12px"' +
-          (isNoEmail ? '  em>No registration email / No notice available/em' +
-          : (isNoNotice ? '  em>No notice available/em' + '')) +
-          '    /span';
-      } else {
-        noticeHtml = '    button class="amfcc-notice-btn" data-reg-id="' + escapeHtml(row.id) + '" ' +
-          (canSend ? 'onclick="sendNoticeSingle(this)"' : 'disabled') + '>' +
-          '  Send' +
-          '    /button';
-      }
-
-      var infoHtml = '    button class="amfcc-fee-info-btn" data-reg-id="' + escapeHtml(row.id) + '" ' +
-        'onclick="showFeeInfo(this)"' + '>Info' +
-        '    /button';
-
-      var checkHtml = '    input type="checkbox" data-reg-id="' + escapeHtml(row.id) + '" ' +
-        'data-student="' + escapeHtml(row.student) + '" ' +
-        (canCheck ? '' : 'disabled') +
-        '/';
-
-      tr.innerHTML = '' +
-        '      td>' + checkHtml + '    /td' +
-        '      td>span>' + escapeHtml(row.student) + '' +
-        '        button class="amfcc-fee-badge ' + badgeClass + '" disabled>' +
-        '          ' + badgeText + '' +
-        '        /button' +
-        '      /span' +
-        '    /td' +
-        '      td>' + escapeHtml(row.registration) + '    /td' +
-        '      td style="white-space:nowrap">' + balanceDisplay + '    /td' +
-        '      td>' + infoHtml + '    /td' +
-        '      td>' + escapeHtml(emailDisplay) + '    /td' +
-        '      td>' + noticeHtml + '    /td' +
-        '    /tr';
-      tbody.appendChild(tr);
-    }
-
-    table.appendChild(tbody);
-    tableWrap.appendChild(table);
-    return tableWrap;
-  }
-
-  function showFeeInfo(btn) {
-    var regId = btn.getAttribute('data-reg-id');
-    var row = feeData.find(function(r) { return String(r.id) === String(regId); });
-    if (!row) return;
-
-    var status = row.status || 'NOT RECORDED';
-    var balance = 'USD ' + (row.balance !== null && row.balance !== undefined ? parseFloat(row.balance).toFixed(2) : '0.00');
-    var email = row.email || 'No registration email';
-    var notice = row.notice_text || 'No notice available';
-    var lastDel = lastDeliveryStatuses[row.id] || {};
-
-    var modalContent = '' +
-      '    div class="amfcc-modal-row">' +
-      '      span class="amfcc-modal-label">Status: ' + escapeHtml(status) + '' +
-      '    /div' +
-      '    div class="amfcc-modal-row">' +
-      '      span class="amfcc-modal-label">USD Balance: ' + escapeHtml(balance) + '' +
-      '    /div' +
-      '    div class="amfcc-modal-row">' +
-      '      span class="amfcc-modal-label">Registration Email: ' + escapeHtml(email) + '' +
-      '    /div' +
-      '    div class="amfcc-modal-row">' +
-      '      span class="amfcc-modal-label">Notice Text: ' + escapeHtml(notice) + '' +
-      '    /div' +
-      '    div class="amfcc-modal-row">' +
-      '      span class="amfcc-modal-label">Last Delivery: ' +
-      '      span>' +
-      '        ' + escapeHtml(lastDel.status || 'N/A') + ' ' +
-      '        (' + escapeHtml(lastDel.time || 'N/A') + ')' +
-      '      /span' +
-      '    /div' +
-      '    div class="amfcc-modal-row" style="color:' + GRAY + ';font-style:italic;margin-top:8px">' +
-      '      Note: This panel never sends notices automatically.' +
-      '    /div';
-
-    openModal(modalContent);
-  }
-
-  function toggleAll(cb) {
-    var checkboxes = document.querySelectorAll('.amfcc-fee-table tbody input[type="checkbox"]:not([disabled])');
-    checkboxes.forEach(function(ch) {
-      ch.checked = cb.checked;
-    });
-  }
-
-  function getSelectedIds() {
-    var checked = document.querySelectorAll('.amfcc-fee-table tbody input[type="checkbox"]:checked');
-    var ids = [];
-    checked.forEach(function(ch) {
-      ids.push(ch.getAttribute('data-reg-id'));
-    });
-    return ids;
-  }
-
-  function getActorName() {
-    var actorEl = document.getElementById('actor-name');
-    return actorEl ? actorEl.value || '' : '';
-  }
-
-  function showFeedback(msg, type) {
-    var existing = document.querySelector('.amfcc-fee-feedback');
-    if (existing) existing.remove();
-
-    var fb = document.createElement('div');
-    fb.className = 'amfcc-fee-feedback ' + type;
-    fb.textContent = msg;
-
-    var panel = document.querySelector('.amfcc-fee-panel');
-    if (panel) {
-      panel.insertBefore(fb, panel.querySelector('.amfcc-fee-table-wrap'));
-    }
-  }
-
-  function confirmAction(msg, callback) {
-    if (confirm(msg)) {
-      callback();
-    }
-  }
-
-  function sendNoticeSingle(btn) {
-    var regId = btn.getAttribute('data-reg-id');
-    var ids = [regId];
-    var actorName = getActorName();
-
-    confirmAction('Send notice for this registration?', function() {
-      doSendNotices(ids, actorName);
-    });
-  }
-
-  function sendBulkNotices() {
-    var ids = getSelectedIds();
-    if (ids.length === 0) {
-      showFeedback('No notices selected.', 'error');
-      return;
-    }
-    var actorName = getActorName();
-
-    confirmAction('Send notices for ' + ids.length + ' selected registration(s)?', function() {
-      doSendNotices(ids, actorName);
-    });
-  }
-
-  function doSendNotices(ids, actorName) {
-    if (typeof window.amfccDb === 'undefined' || typeof window.registration_admin_send_fee_notices !== 'function') {
-      showFeedback('Fee notice API not available.', 'error');
-      return;
-    }
-
-    var sessionToken = null;
-    try {
-      sessionToken = sessionStorage.getItem('amfcc_it_admin_session');
-    } catch(e) {}
-
-    window.registration_admin_send_fee_notices({
-      p_session_token: sessionToken,
-      p_registration_ids: ids,
-      p_actor_name: actorName
-    }, function(result) {
-      if (result && result.queued > 0) {
-        showFeedback('Successfully queued ' + result.queued + ' notice(s) for delivery.', 'success');
-        if (typeof window.pass_email_worker !== 'undefined') {
-          window.pass_email_worker({ action: 'drain' });
-        }
-        refreshFees();
-      } else if (result && result.error) {
-        showFeedback('Error: ' + escapeHtml(result.error), 'error');
-      } else {
-        showFeedback('Notice(s) sent.', 'success');
-        refreshFees();
-      }
-    });
-  }
-
-  function refreshFees() {
-    if (typeof window.registration_admin_fee_dashboard !== 'function') {
-      showFeedback('Fee dashboard API not available.', 'error');
-      return;
-    }
-
-    var sessionToken = null;
-    try {
-      sessionToken = sessionStorage.getItem('amfcc_it_admin_session');
-    } catch(e) {}
-
-    window.registration_admin_fee_dashboard({
-      p_session_token: sessionToken,
-      p_term_id: null
-    }, function(result) {
-      if (result && result.data && result.data.length > 0) {
-        feeData = result.data;
-        if (result.deliveries) {
-          lastDeliveryStatuses = result.deliveries;
-        }
-        if (feeTableWrap.parentNode) {
-          feeTableWrap.parentNode.replaceChild(buildPanelContent(feeData), feeTableWrap);
-        }
-        showFeedback('Fee registrations refreshed.', 'success');
-      } else {
-        showFeedback('No fee registrations found.', 'error');
-      }
-    });
-  }
-
-  var feeTableWrap = null;
-
-  function buildPanelContent(data) {
-    var panelContent = document.createElement('div');
-
-    var toolbar = document.createElement('div');
-    toolbar.className = 'amfcc-fee-toolbar';
-
-    var searchInput = document.createElement('input');
-    searchInput.type = 'text';
-    searchInput.placeholder = 'Search students...';
-    searchInput.id = 'amfcc-fee-search';
-    searchInput.addEventListener('input', function() {
-      filterTable(searchInput.value);
-    });
-
-    var selectAllBtn = document.createElement('button');
-    selectAllBtn.textContent = 'Select all';
-    selectAllBtn.addEventListener('click', function() {
-      var cb = document.getElementById('amfcc-select-all');
-      if (cb) cb.checked = true;
-      toggleAll(cb);
-    });
-
-    var sendNoticesBtn = document.createElement('button');
-    sendNoticesBtn.textContent = 'Send selected notices';
-    sendNoticesBtn.addEventListener('click', sendBulkNotices);
-
-    var refreshBtn = document.createElement('button');
-    refreshBtn.textContent = 'Refresh fees';
-    refreshBtn.addEventListener('click', refreshFees);
-
-    toolbar.appendChild(searchInput);
-    toolbar.appendChild(selectAllBtn);
-    toolbar.appendChild(sendNoticesBtn);
-    toolbar.appendChild(refreshBtn);
-
-    panelContent.appendChild(toolbar);
-
-    feeTableWrap = renderTable(data);
-    panelContent.appendChild(feeTableWrap);
-
-    return panelContent;
-  }
-
-  function filterTable(term) {
-    var rows = document.querySelectorAll('.amfcc-fee-table tbody tr');
-    term = term.toLowerCase();
-    rows.forEach(function(row) {
-      var text = row.textContent.toLowerCase();
-      row.style.display = text.indexOf(term) !== -1 ? '' : 'none';
-    });
-  }
-
-  function createPanel(data) {
-    var existingPanel = document.querySelector('.amfcc-fee-panel');
-    if (existingPanel) {
-      existingPanel.remove();
-    }
-
-    var panel = document.createElement('div');
-    panel.className = 'amfcc-fee-panel';
-
-    var title = document.createElement('h2');
-    title.textContent = 'Fee information and notices';
-    panel.appendChild(title);
-
-    var content = buildPanelContent(data);
-    panel.appendChild(content);
-
-    var viewEnrolment = document.getElementById('view-enrolment');
-    if (viewEnrolment) {
-      viewEnrolment.appendChild(panel);
-    }
-  }
-
-  injectCss();
-
-  function init() {
-    var viewEl = document.getElementById('view-enrolment');
-    if (viewEl) {
-      var sessionToken = null;
-      try {
-        sessionToken = sessionStorage.getItem('amfcc_it_admin_session');
-      } catch(e) {}
-
-      if (typeof window.registration_admin_fee_dashboard === 'function') {
-        window.registration_admin_fee_dashboard({
-          p_session_token: sessionToken,
-          p_term_id: null
-        }, function(result) {
-          if (result && result.data && result.data.length > 0) {
-            feeData = result.data;
-            if (result.deliveries) {
-              lastDeliveryStatuses = result.deliveries;
-            }
-            createPanel(feeData);
-          }
-        });
-      }
-    }
-  }
-
-  var viewEl = document.getElementById('view-enrolment');
-  if (viewEl) {
-    init();
-  } else {
-    var checkTimer = setInterval(function() {
-      var el = document.getElementById('view-enrolment');
-      if (el) {
-        clearInterval(checkTimer);
-        init();
-      }
-    }, 500);
-
-    if (typeof MutationObserver !== 'undefined') {
-      var observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(m) {
-          if (m.addedNodes.length) {
-            for (var i = 0; i m.addedNodes.length; i++) {
-              var node = m.addedNodes[i];
-              if (node.nodeType === 1 && node.id === 'view-enrolment') {
-                observer.disconnect();
-                clearInterval(checkTimer);
-                init();
-                break;
-              }
-            }
-          }
-        });
-      });
-      observer.observe(document.body, { childList: true, subtree: true });
-    }
-  }
-
-  var navBtn = document.querySelector('[href*="term-enrolment"], a:contains("Term enrolment")');
-  if (typeof window.amfccNav === 'function') {
-    var origNav = window.amfccNav;
-    window.amfccNav = function() {
-      origNav.apply(this, arguments);
-      setTimeout(function() {
-        var el = document.getElementById('view-enrolment');
-        if (el && feeData.length === 0) {
-          init();
-        }
-      }, 300);
-    };
-  }
-
-  var reloadBtn = document.getElementById('reload-term');
-  if (reloadBtn) {
-    reloadBtn.addEventListener('click', function() {
-      setTimeout(function() {
-        var el = document.getElementById('view-enrolment');
-        if (el) init();
-      }, 300);
-    });
-  }
-
+'use strict';
+
+var GREEN='#2e7d32',GREEN_L='#4caf50',GREEN_BG='#e8f5e9',BD='#c8e6c9',W='#fff',BLK='#212121',GRY='#757575',LGRY='#f5f5f5',RED='#d32f2f',ORG='#f57c00';
+
+function esc(s){return s==null?'':String(s).replace(/&/g,'&amp;').replace(/'/g,'&#39;').replace(/"/g,'&quot;').replace(/`/g,'&#96;')}
+
+function mkEl(tag){return document.createElement(tag)}
+function setAttr(el,a,v){el.setAttribute(a,v)}
+function fmtUsd(n){return '$'+(Number(n)||0).toFixed(2)}
+
+function injectCss(){
+if(document.getElementById('amfcc-fee-css'))return;
+var s=mkEl('style');s.id='amfcc-fee-css';
+s.textContent='.amfcc-fp{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;max-width:1200px;margin:20px auto;padding:0 16px;}.amfcc-fp h2{color:'+GREEN+';border-bottom:2px solid '+GREEN+';padding-bottom:8px;margin:0 0 12px;font-size:20px;}.amfcc-fp .amfcc-helptxt{font-size:13px;color:'+GRY+';margin:0 0 12px;padding:8px;background:'+GREEN_BG+';border:1px solid '+BD+';border-radius:4px;}.amfcc-fp .amfcc-tb{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px;}.amfcc-fp .amfcc-tb th,.amfcc-fp .amfcc-tb td{border:1px solid '+BD+';padding:8px;text-align:left;vertical-align:middle;}.amfcc-fp .amfcc-tb thead{background:'+GREEN_BG+';}.amfcc-fp .amfcc-tb th{color:'+BLK+';font-weight:600;font-size:13px;}.amfcc-fp .amfcc-tb td{text-align:center;}.amfcc-fp .amfcc-tb td:first-child{text-align:center;}.amfcc-fp .amfcc-tb td:nth-child(2){text-align:left;}.amfcc-fp .amfcc-tb td:nth-child(6){text-align:left;}.amfcc-fp .amfcc-tb td:nth-child(7){text-align:left;}.amfcc-fp .amfcc-btngroup{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;align-items:center;}.amfcc-fp button{padding:6px 12px;border:none;border-radius:4px;cursor:pointer;font-size:13px;font-weight:600;}.amfcc-fp .btn-g{background:'+GREEN+';color:'+W+';}.amfcc-fp .btn-g:hover{background:'+GREEN_L+';}.amfcc-fp .btn-g:disabled{background:'+GRY+';cursor:not-allowed;}.amfcc-fp .btn-s{background:'+LGRY+';color:'+BLK+';}.amfcc-fp .badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;color:'+W+';}.amfcc-fp .badge-paid{background:#2e7d32;}.amfcc-fp .badge-arrears{background:#f57c00;}.amfcc-fp .badge-notr{background:#757575;}.amfcc-fp .msg{padding:8px;border-radius:4px;margin:8px 0;font-size:13px;}.amfcc-fp .msg-s{background:'+GREEN_BG+';color:'+GREEN+';border:1px solid '+BD+';}.amfcc-fp .msg-e{background:#ffebee;color:'+RED+';border:1px solid #ef9a9a;}.amfcc-fp .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;}.amfcc-fp .modal-box{background:'+W+';border-radius:8px;padding:24px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 4px 20px rgba(0,0,0,.25);}.amfcc-fp .modal-box h3{color:'+GREEN+';margin:0 0 16px;font-size:18px;border-bottom:1px solid '+BD+';padding-bottom:8px;}.amfcc-fp .modal-box table{width:100%;font-size:13px;}.amfcc-fp .modal-box td{padding:4px 8px;border-bottom:1px solid #eee;vertical-align:top;}.amfcc-fp .modal-box td:first-child{font-weight:600;width:160px;color:'+GRY+';}.amfcc-fp .modal-close{float:right;background:none;border:none;font-size:20px;cursor:pointer;color:'+GRY+';padding:0 4px;}.amfcc-fp .modal-close:hover{color:'+BLK+';}.amfcc-fp .chk-cell{width:40px;text-align:center;}.amfcc-fp .fee-btn{background:none;border:1px solid '+GREEN+';color:'+GREEN+';padding:3px 10px;border-radius:4px;cursor:pointer;font-size:12px;}.amfcc-fp .fee-btn:hover{background:'+GREEN_BG+';}.amfcc-fp input[type=checkbox]{width:16px;height:16px;cursor:pointer;}@media(max-width:768px){.amfcc-fp .amfcc-tb{display:block;overflow-x:auto;}.amfcc-fp .amfcc-btngroup{flex-direction:column;align-items:stretch;}}';
+document.head.appendChild(s);
+}
+
+var feeData=[],searchQ='',panel=null;
+
+function init(){
+document.addEventListener('DOMContentLoaded',function(){
+if(document.getElementById('amfcc-fee-panel'))return;
+injectCss();
+var vb=document.querySelector('button[data-view="enrolment"]'),rb=document.getElementById('refresh-button');
+var observer=new MutationObserver(function(){
+if(document.getElementById('view-enrolment')){
+createPanel();observer.disconnect();return;
+}
+});
+observer.observe(document.body,{childList:true,subtree:true});
+if(document.getElementById('view-enrolment')){createPanel();observer.disconnect();}
+if(vb)vb.addEventListener('click',function(){setTimeout(createPanel,300);});
+if(rb)rb.addEventListener('click',function(){if(document.getElementById('view-enrolment')){setTimeout(refreshData,300);}});
+});
+}
+
+function createPanel(){
+if(document.getElementById('amfcc-fee-panel'))return;
+var ve=document.getElementById('view-enrolment');
+if(!ve)return;
+injectCss();
+panel=document.createElement('div');
+panel.id='amfcc-fee-panel';panel.className='amfcc-fp';
+
+var h2=mkEl('h2');h2.textContent='Fee information and notices';panel.appendChild(h2);
+
+var ht=mkEl('p');ht.className='amfcc-helptxt';ht.textContent='Notices are manual only. Paid students cannot be sent notices. Recipient email comes from the student\'s registration form.';panel.appendChild(ht);
+
+var tb=document.createElement('table');tb.className='amfcc-tb';
+var thead=mkEl('thead'),tbody=mkEl('tbody');
+var tr=mkEl('tr');
+var th=mkEl('th');th.className='chk-cell';
+var sac=mkEl('input');sac.type='checkbox';sac.id='sa-chk';
+sac.addEventListener('change',function(){toggleSelectAll();});
+th.appendChild(sac);tr.appendChild(th);
+['Student','Registration','Balance','Fee information','Email','Notice'].forEach(function(t){
+var th2=mkEl('th');th2.textContent=t;tr.appendChild(th2);
+});
+thead.appendChild(tr);tb.appendChild(thead);tb.appendChild(tbody);panel.appendChild(tb);
+
+var bg=document.createElement('div');bg.className='amfcc-btngroup';
+var rb2=mkEl('button');rb2.className='btn-g';rb2.textContent='Refresh fees';
+rb2.addEventListener('click',refreshData);bg.appendChild(rb2);
+var ssb=mkEl('button');ssb.className='btn-g';ssb.textContent='Send selected notices';ssb.id='ssb-btn';ssb.disabled=true;
+ssb.addEventListener('click',sendSelected);bg.appendChild(ssb);
+
+var si=mkEl('input');si.type='text';si.placeholder='Search students...';si.style.cssText='padding:6px 10px;border:1px solid '+BD+';border-radius:4px;font-size:13px;width:250px;';
+si.addEventListener('input',function(){searchQ=si.value.toLowerCase();render();});
+bg.appendChild(si);panel.appendChild(bg);
+
+ve.insertBefore(panel,ve.firstChild);
+}
+
+async function refreshData(){
+if(!document.getElementById('view-enrolment'))return;
+try{
+var raw=sessionStorage.getItem('amfcc_it_admin_session');
+if(!raw){showMsg('No session found.');return;}
+var session=JSON.parse(raw);
+var result=await window.amfccDb.rpc('registration_admin_fee_dashboard',{p_session_token:session.session_token,p_term_id:null});
+if(result.error||!result.data||result.data.status!=='success'){showMsg('Error: '+(result.error||result.data?.message||'Unknown'));return;}
+feeData=result.data.registrations||[];
+render();
+}catch(e){showMsg('Error: '+e.message);}
+}
+
+function showMsg(m,ok){
+var prev=document.getElementById('fee-msg');
+if(prev)prev.remove();
+var d=mkEl('div');d.id='fee-msg';d.className='msg '+(ok?'msg-s':'msg-e');d.textContent=m;
+var btns=panel.querySelector('.amfcc-btngroup');
+btns.parentNode.insertBefore(d,btns.nextSibling);
+}
+
+function render(){
+if(!panel)return;
+var tbody=panel.querySelector('tbody');
+if(!tbody)return;tbody.innerHTML='';
+var filtered=feeData.filter(function(r){
+return !searchQ||r.student_name.toLowerCase().indexOf(searchQ)!==-1||String(r.registration_number).toLowerCase().indexOf(searchQ)!==-1||(r.student_email||'').toLowerCase().indexOf(searchQ)!==-1;
+});
+var enabledCount=0;
+filtered.forEach(function(r){
+if(r.send_eligible)enabledCount++;
+var tr=mkEl('tr');
+var tc=mkEl('td');tc.className='chk-cell';
+var cb=mkEl('input');cb.type='checkbox';cb.dataset.id=r.registration_id;
+if(!r.send_eligible)cb.disabled=true;
+cb.addEventListener('change',function(){updateSSBtn();});
+tc.appendChild(cb);tr.appendChild(tc);
+
+var tn=mkEl('td');
+var snSpan=mkEl('span');snSpan.textContent=r.student_name||'';
+var badge=mkEl('button');badge.disabled=true;
+if(r.fee_status==='paid'){badge.className='badge badge-paid';badge.textContent='PAID';}
+else if(r.fee_status==='arrears'){badge.className='badge badge-arrears';badge.textContent='ARREARS';}
+else{badge.className='badge badge-notr';badge.textContent='NOT RECORDED';}
+tn.appendChild(snSpan);tn.appendChild(badge);tr.appendChild(tn);
+
+var rn=mkEl('td');rn.textContent=r.registration_number||'';tr.appendChild(rn);
+
+var bn=mkEl('td');bn.textContent=fmtUsd(r.outstanding_balance);tr.appendChild(bn);
+
+var fi=mkEl('td');
+var fb=mkEl('button');fb.className='fee-btn';fb.textContent='View';
+fb.addEventListener('click',function(){showModal(r);});
+fi.appendChild(fb);tr.appendChild(fi);
+
+var em=mkEl('td');em.textContent=r.student_email||'-';tr.appendChild(em);
+
+var nc=mkEl('td');
+var nsb=mkEl('button');nsb.className='btn-g';nsb.textContent='Send notice';
+if(r.send_eligible){nsb.disabled=false;nsb.addEventListener('click',function(){sendSingle(r);});}
+else{nsb.disabled=true;
+if(r.fee_status==='paid')nsb.textContent='Fully paid';
+else if(!r.student_email)nsb.textContent='No registration email';
+else if(!r.notice_text)nsb.textContent='No notice available';
+else nsb.textContent='Not eligible';
+}
+nc.appendChild(nsb);tr.appendChild(nc);
+tbody.appendChild(tr);
+});
+updateSSBtn();
+var sac=panel.querySelector('#sa-chk');
+if(sac)sac.checked=false;
+}
+
+function updateSSBtn(){
+var btn=panel.querySelector('#ssb-btn');
+if(!btn)return;
+var cbs=panel.querySelectorAll('tbody input[type=checkbox]:not(:disabled)');
+var has=true;
+cbs.forEach(function(cb){if(!cb.checked){has=false;}});
+btn.disabled=!has||cbs.length===0;
+}
+
+function toggleSelectAll(){
+var sac=panel.querySelector('#sa-chk');
+var cbs=panel.querySelectorAll('tbody input[type=checkbox]:not(:disabled)');
+var allChk=true;
+cbs.forEach(function(cb){if(!cb.checked){allChk=false;}});
+cbs.forEach(function(cb){cb.checked=allChk;});
+updateSSBtn();
+}
+
+async function sendSingle(row){
+if(!window.confirm('Send notice to '+row.student_name+' ('+row.registration_number+')?'))return;
+try{
+var raw=sessionStorage.getItem('amfcc_it_admin_session');
+var session=JSON.parse(raw);
+var an=document.getElementById('actor-name');
+var actorName=an?an.value:null;
+var result=await window.amfccDb.rpc('registration_admin_send_fee_notices',{p_session_token:session.session_token,p_registration_ids:[row.registration_id],p_actor_name:actorName});
+if(result.error||result.data.status!=='success'){showMsg('Error: '+(result.error||result.data.message),false);return;}
+if(result.data.queued>0){
+try{await window.amfccDb.functions.invoke('pass-email-worker',{body:{action:'drain'}});}catch(e){}
+}
+showMsg('Notice sent for '+row.student_name,true);
+refreshData();
+}catch(e){showMsg('Error: '+e.message,false);}
+}
+
+async function sendSelected(){
+var cbs=panel.querySelectorAll('tbody input[type=checkbox]:checked');
+if(cbs.length===0){showMsg('No rows selected.');return;}
+var ids=[];cbs.forEach(function(cb){ids.push(cb.dataset.id);});
+if(!window.confirm('Send notices to '+ids.length+' student(s)?'))return;
+try{
+var raw=sessionStorage.getItem('amfcc_it_admin_session');
+var session=JSON.parse(raw);
+var an=document.getElementById('actor-name');
+var actorName=an?an.value:null;
+var result=await window.amfccDb.rpc('registration_admin_send_fee_notices',{p_session_token:session.session_token,p_registration_ids:ids,p_actor_name:actorName});
+if(result.error||result.data.status!=='success'){showMsg('Error: '+(result.error||result.data.message),false);return;}
+if(result.data.queued>0){
+try{await window.amfccDb.functions.invoke('pass-email-worker',{body:{action:'drain'}});}catch(e){}
+}
+showMsg('Notices queued for '+result.data.queued+' student(s).',true);
+refreshData();
+}catch(e){showMsg('Error: '+e.message,false);}
+}
+
+function showModal(row){
+var ov=mkEl('div');ov.className='modal-overlay';
+var bx=mkEl('div');bx.className='modal-box';
+var cl=mkEl('button');cl.className='modal-close';cl.textContent='\u00d7';
+cl.addEventListener('click',function(){ov.remove();});
+bx.appendChild(cl);
+var h3=mkEl('h3');h3.textContent='Fee Information';bx.appendChild(h3);
+var tbl=mkEl('table');
+var fields=[
+['Student',row.student_name],['Registration',row.registration_number],
+['Status',row.fee_status==='paid'?'PAID':row.fee_status==='arrears'?'ARREARS':'NOT RECORDED'],
+['Outstanding Balance',fmtUsd(row.outstanding_balance)],['Registration Email',row.student_email||'-'],
+['Notice Text',row.notice_text||'-'],['Last Queued',row.notice_last_queued_at||'-'],
+['Last Sent',row.notice_last_sent_at||'-'],['Last Recipient',row.notice_last_recipient||'-'],
+['Delivery Status',row.notice_last_delivery_status||'-'],['Last Error',row.notice_last_error||'-']
+];
+fields.forEach(function(f){
+var r2=mkEl('tr');var td1=mkEl('td');td1.textContent=f[0];var td2=mkEl('td');td2.textContent=f[1]||'';
+r2.appendChild(td1);r2.appendChild(td2);tbl.appendChild(r2);
+});
+bx.appendChild(tbl);
+var ob=mkEl('button');ob.className='btn-s';ob.textContent='Close';ob.addEventListener('click',function(){ov.remove();});
+bx.appendChild(ob);ov.appendChild(bx);document.body.appendChild(ov);
+ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});
+}
+
+init();
 })();
