@@ -5224,5 +5224,158 @@
       "setting_value",
       "description"
     ]
+  },
+  {
+    "key": "term_registrations",
+    "table": "term_registrations",
+    "title": "Enrolment corrections",
+    "group": "Student services",
+    "editable": [
+      "student_answers",
+      "staff_note"
+    ],
+    "primary_keys": [
+      "id"
+    ],
+    "archive_field": null,
+    "can_create": false,
+    "can_delete": false,
+    "actions": [
+      "reopen_registration"
+    ],
+    "help": "Reopen a completed enrolment before correcting it. Use the labelled student fields for reviewed corrections, including older terms. Staff sections are completed in Administration Staff. Existing submissions and change history are retained.",
+    "display_fields": [
+      "student_name_snapshot",
+      "registration_number_snapshot",
+      "term_id",
+      "status",
+      "completed_at"
+    ],
+    "fields": [
+      {
+        "name": "student_answers",
+        "label": "Student information",
+        "type": "jsonb",
+        "required": true,
+        "default": {},
+        "options": [],
+        "reference": null,
+        "primary": false,
+        "object_fields": [
+          {
+            "id": "gender",
+            "type": "select",
+            "label": "Gender",
+            "options": [
+              "Male",
+              "Female"
+            ],
+            "required": true
+          },
+          {
+            "id": "marital_status",
+            "type": "select",
+            "label": "Marital status",
+            "options": [
+              "Single",
+              "Married",
+              "Widowed",
+              "Divorced"
+            ],
+            "required": true
+          },
+          {
+            "id": "spouse_location",
+            "type": "text",
+            "label": "If married, where is your spouse?",
+            "required": false,
+            "show_when": {
+              "field": "marital_status",
+              "equals": "Married"
+            }
+          },
+          {
+            "id": "identity_number",
+            "type": "text",
+            "label": "ID number / passport number",
+            "required": true
+          },
+          {
+            "id": "student_email",
+            "type": "email",
+            "label": "Student email",
+            "required": true
+          },
+          {
+            "id": "student_phone",
+            "type": "tel",
+            "label": "Student phone number",
+            "required": true
+          },
+          {
+            "id": "sponsor_name",
+            "type": "text",
+            "label": "Sponsor name",
+            "required": false
+          },
+          {
+            "id": "sponsor_contact",
+            "type": "tel",
+            "label": "Sponsor contact number",
+            "required": false
+          },
+          {
+            "id": "accommodation_type",
+            "type": "select",
+            "label": "Type of accommodation",
+            "options": [
+              "Shared",
+              "Married"
+            ],
+            "required": false
+          },
+          {
+            "id": "accommodation_hostel",
+            "type": "text",
+            "label": "Hostel allocated",
+            "required": false,
+            "show_when": {
+              "field": "accommodation_type",
+              "equals": "Shared"
+            }
+          },
+          {
+            "id": "accommodation_room",
+            "type": "text",
+            "label": "Room number",
+            "required": false,
+            "show_when": {
+              "field": "accommodation_type",
+              "equals": "Shared"
+            }
+          },
+          {
+            "id": "shared_occupants",
+            "type": "number",
+            "label": "Number of occupants in room",
+            "required": false,
+            "show_when": {
+              "field": "accommodation_type",
+              "equals": "Shared"
+            }
+          }
+        ]
+      },
+      {
+        "name": "staff_note",
+        "label": "Staff note",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ]
   }
 ]
