@@ -6,6 +6,7 @@ window.APP_CONFIG = {
 // Loader for fee enrolment controls
 (function() {
   var s = document.createElement("script");
-  s.src = "fee_enrolment_controls.js?v=1";
+  s.src = "fee_enrolment_controls.js?v=4-notice-history";
   document.head.appendChild(s);
 })();
+

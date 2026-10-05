@@ -40,7 +40,7 @@ var feeData=[],searchQ='',panel=null,sendingNotices=false,loadingFees=false;
   }
 
 function init(){
-document.addEventListener('DOMContentLoaded',function(){
+function ready(){
 if(document.getElementById('amfcc-fee-panel'))return;
 injectCss();
 var vb=document.querySelector('button[data-view="enrolment"]'),rb=document.getElementById('refresh-button');
@@ -53,7 +53,8 @@ observer.observe(document.body,{childList:true,subtree:true});
 if(document.getElementById('view-enrolment')){createPanel();observer.disconnect();}
 if(vb)vb.addEventListener('click',function(){setTimeout(function(){createPanel();refreshData();},300);});
 if(rb)rb.addEventListener('click',function(){if(document.getElementById('view-enrolment')){setTimeout(refreshData,300);}});
-});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready);else ready();
 }
 
 function createPanel(){
@@ -260,4 +261,3 @@ ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});
 setInterval(function(){var pane=document.getElementById('it-enrolment-fees-pane'),view=document.getElementById('view-enrolment');if(!document.hidden&&pane&&!pane.hidden&&view&&view.classList.contains('active')&&!sendingNotices&&!panel.querySelector('tbody input[type=checkbox]:checked'))refreshData();},30000);
 init();
 })();
-
