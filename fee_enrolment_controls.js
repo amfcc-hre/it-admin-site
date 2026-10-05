@@ -16,7 +16,28 @@ s.textContent='.amfcc-fp{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI"
 document.head.appendChild(s);
 }
 
-var feeData=[],searchQ='',panel=null;
+var feeData=[],searchQ='',panel=null,sendingNotices=false,loadingFees=false;
+
+
+  function noticeWhen(value) {
+    if (!value) return 'Not yet';
+    var date = new Date(value);
+    return isNaN(date.getTime()) ? 'Unknown date' : date.toLocaleString('en-ZW', {timeZone:'Africa/Harare',day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  }
+  function hasSentNotice(row) {
+    return !!row.notice_last_sent_at || Number(row.notice_sent_count || 0)>0 || row.notice_last_delivery_status==='sent' || (row.notice_history || []).some(function (item) { return item.status==='sent'; });
+  }
+  function noticeStatus(row) {
+    var sent = hasSentNotice(row), status = row.notice_last_delivery_status;
+    if (status === 'queued') return sent ? 'Follow-up queued' : 'Notice queued';
+    if (status === 'sending') return sent ? 'Sending follow-up' : 'Sending notice';
+    if (status === 'failed') return sent ? 'Last follow-up failed' : 'Delivery failed';
+    return sent ? 'Notice sent' : 'Not sent';
+  }
+  function noticeCount(row) {
+    var count=Number(row.notice_sent_count || 0);
+    return count ? count+' notice'+(count===1?'':'s')+' sent' : hasSentNotice(row) ? 'Previously sent' : 'No notice sent yet';
+  }
 
 function init(){
 document.addEventListener('DOMContentLoaded',function(){
@@ -30,7 +51,7 @@ createPanel();observer.disconnect();return;
 });
 observer.observe(document.body,{childList:true,subtree:true});
 if(document.getElementById('view-enrolment')){createPanel();observer.disconnect();}
-if(vb)vb.addEventListener('click',function(){setTimeout(createPanel,300);});
+if(vb)vb.addEventListener('click',function(){setTimeout(function(){createPanel();refreshData();},300);});
 if(rb)rb.addEventListener('click',function(){if(document.getElementById('view-enrolment')){setTimeout(refreshData,300);}});
 });
 }
@@ -54,7 +75,7 @@ var th=mkEl('th');th.className='chk-cell';
 var sac=mkEl('input');sac.type='checkbox';sac.id='sa-chk';
 sac.addEventListener('change',function(){toggleSelectAll();});
 th.appendChild(sac);tr.appendChild(th);
-['Student','Registration','Balance','Fee information','Email','Notice'].forEach(function(t){
+['Student','Registration','Balance','Fee information','Email','Notice status','Action'].forEach(function(t){
 var th2=mkEl('th');th2.textContent=t;tr.appendChild(th2);
 });
 thead.appendChild(tr);tb.appendChild(thead);tb.appendChild(tbody);panel.appendChild(tb);
@@ -69,12 +90,23 @@ var si=mkEl('input');si.type='text';si.placeholder='Search students...';si.style
 si.addEventListener('input',function(){searchQ=si.value.toLowerCase();render();});
 bg.appendChild(si);panel.appendChild(bg);
 
-ve.insertBefore(panel,ve.firstChild);
+var heading=ve.querySelector('.view-heading');
+var tabs=mkEl('div');tabs.className='enrolment-subtabs';tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label','Term enrolment sections');
+var progress=mkEl('div');progress.id='it-enrolment-progress-pane';progress.setAttribute('role','tabpanel');
+var fees=mkEl('div');fees.id='it-enrolment-fees-pane';fees.setAttribute('role','tabpanel');fees.hidden=true;
+Array.from(ve.children).forEach(function(child){if(child!==heading)progress.appendChild(child);});
+['Registration Progress','Fees'].forEach(function(label,index){
+var b=mkEl('button');b.type='button';b.className='button '+(index?'secondary':'primary');b.textContent=label;b.setAttribute('role','tab');b.setAttribute('aria-selected',index?'false':'true');
+b.addEventListener('click',function(){progress.hidden=index===1;fees.hidden=index===0;Array.from(tabs.children).forEach(function(t){var active=t===b;t.setAttribute('aria-selected',active?'true':'false');t.className='button '+(active?'primary':'secondary');});if(index)refreshData();});tabs.appendChild(b);
+});
+tabs.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin:12px 0';
+ve.appendChild(tabs);ve.appendChild(progress);ve.appendChild(fees);fees.appendChild(panel);
+if(sessionStorage.getItem('amfcc_it_admin_session'))refreshData();
 }
 
 async function refreshData(){
-if(!document.getElementById('view-enrolment'))return;
-try{
+if(!document.getElementById('view-enrolment')||loadingFees)return;
+loadingFees=true;try{
 var raw=sessionStorage.getItem('amfcc_it_admin_session');
 if(!raw){showMsg('No session found.');return;}
 var session=JSON.parse(raw);
@@ -83,6 +115,7 @@ if(result.error||!result.data||result.data.status!=='success'){showMsg('Error: '
 feeData=result.data.registrations||[];
 render();
 }catch(e){showMsg('Error: '+e.message);}
+finally{loadingFees=false;}
 }
 
 function showMsg(m,ok){
@@ -129,9 +162,15 @@ fi.appendChild(fb);tr.appendChild(fi);
 
 var em=mkEl('td');em.textContent=r.student_email||'-';tr.appendChild(em);
 
+var delivery=mkEl('td');
+var ds=mkEl('strong');ds.textContent=noticeStatus(r);delivery.appendChild(ds);
+var dc=mkEl('div');dc.textContent=noticeCount(r);delivery.appendChild(dc);
+if(r.notice_last_sent_at){var dt=mkEl('div');dt.textContent='Last sent: '+noticeWhen(r.notice_last_sent_at);delivery.appendChild(dt);}
+else if(r.notice_last_queued_at){var dq=mkEl('div');dq.textContent='Queued: '+noticeWhen(r.notice_last_queued_at);delivery.appendChild(dq);}
+tr.appendChild(delivery);
 var nc=mkEl('td');
-var nsb=mkEl('button');nsb.className='btn-g';nsb.textContent='Send notice';
-if(r.send_eligible){nsb.disabled=false;nsb.addEventListener('click',function(){sendSingle(r);});}
+var nsb=mkEl('button');nsb.className='btn-g';nsb.textContent=hasSentNotice(r)?'Send follow-up':'Send notice';
+if(r.send_eligible){nsb.disabled=sendingNotices;nsb.addEventListener('click',function(){sendSingle(r);});}
 else{nsb.disabled=true;
 if(r.fee_status==='paid')nsb.textContent='Fully paid';
 else if(!r.student_email)nsb.textContent='No registration email';
@@ -152,7 +191,7 @@ if(!btn)return;
 var cbs=panel.querySelectorAll('tbody input[type=checkbox]:not(:disabled)');
 var has=false;
 cbs.forEach(function(cb){if(cb.checked){has=true;}});
-btn.disabled=!has||cbs.length===0;
+btn.disabled=sendingNotices||!has||cbs.length===0;
 }
 
 function toggleSelectAll(){
@@ -164,41 +203,27 @@ cbs.forEach(function(cb){cb.checked=!allChk;});
 updateSSBtn();
 }
 
-async function sendSingle(row){
-if(!window.confirm('Send notice to '+row.student_name+' ('+row.registration_number+')?'))return;
-try{
-var raw=sessionStorage.getItem('amfcc_it_admin_session');
-var session=JSON.parse(raw);
-var an=document.getElementById('actor-name');
-var actorName=an?an.value:null;
-var result=await window.amfccDb.rpc('registration_admin_send_fee_notices',{p_session_token:session.session_token,p_registration_ids:[row.registration_id],p_actor_name:actorName});
-if(result.error||result.data.status!=='success'){showMsg('Error: '+(result.error||result.data.message),false);return;}
-if(result.data.queued>0){
-try{await window.amfccDb.functions.invoke('pass-email-worker',{body:{action:'drain'}});}catch(e){}
-}
-showMsg('Notice sent for '+row.student_name,true);
-refreshData();
-}catch(e){showMsg('Error: '+e.message,false);}
-}
-
+async function sendSingle(row){await sendRows([row]);}
 async function sendSelected(){
-var cbs=panel.querySelectorAll('tbody input[type=checkbox]:checked');
-if(cbs.length===0){showMsg('No rows selected.');return;}
-var ids=[];cbs.forEach(function(cb){ids.push(cb.dataset.id);});
-if(!window.confirm('Send notices to '+ids.length+' student(s)?'))return;
-try{
-var raw=sessionStorage.getItem('amfcc_it_admin_session');
-var session=JSON.parse(raw);
-var an=document.getElementById('actor-name');
-var actorName=an?an.value:null;
-var result=await window.amfccDb.rpc('registration_admin_send_fee_notices',{p_session_token:session.session_token,p_registration_ids:ids,p_actor_name:actorName});
-if(result.error||result.data.status!=='success'){showMsg('Error: '+(result.error||result.data.message),false);return;}
-if(result.data.queued>0){
-try{await window.amfccDb.functions.invoke('pass-email-worker',{body:{action:'drain'}});}catch(e){}
+var ids=Array.from(panel.querySelectorAll('tbody input[type=checkbox]:checked')).map(function(cb){return cb.dataset.id;});
+await sendRows(feeData.filter(function(row){return ids.indexOf(row.registration_id)>=0;}));
 }
-showMsg('Notices queued for '+result.data.queued+' student(s).',true);
-refreshData();
+async function sendRows(rows){
+if(sendingNotices)return;
+if(!rows.length){showMsg('No rows selected.');return;}
+var followups=rows.filter(hasSentNotice).length;
+if(!window.confirm('Send '+rows.length+' fee notice'+(rows.length===1?'':'s')+' now?'+(followups?' '+followups+' will be follow-up notices.':'')+'\n\n'+rows.map(function(row){return row.student_name+' ('+row.registration_number+') → '+row.student_email;}).join('\n')+'\n\nUse View to review each notice before sending.'))return;
+sendingNotices=true;render();
+try{
+var session=JSON.parse(sessionStorage.getItem('amfcc_it_admin_session')||'null');
+if(!session)throw new Error('Sign in again before sending.');
+var an=document.getElementById('actor-name');var actorName=an?an.value:null;
+var result=await window.amfccDb.rpc('registration_admin_send_fee_notices',{p_session_token:session.session_token,p_registration_ids:rows.map(function(row){return row.registration_id;}),p_actor_name:actorName});
+if(result.error||!result.data||result.data.status!=='success')throw new Error((result.error&&result.error.message)||(result.data&&result.data.message)||'Notices could not be queued.');
+if(result.data.queued>0){try{await window.amfccDb.functions.invoke('pass-email-worker',{body:{action:'drain'}});}catch(e){}}
+await refreshData();showMsg(result.data.message||'Fee notices queued. Check Notice status for delivery.',true);
 }catch(e){showMsg('Error: '+e.message,false);}
+finally{sendingNotices=false;render();}
 }
 
 function showModal(row){
@@ -214,18 +239,25 @@ var fields=[
 ['Status',row.fee_status==='paid'?'PAID':row.fee_status==='arrears'?'ARREARS':'NOT RECORDED'],
 ['Outstanding Balance',fmtUsd(row.outstanding_balance)],['Registration Email',row.student_email||'-'],
 ['Notice Text',row.notice_text||'-'],['Last Queued',row.notice_last_queued_at||'-'],
-['Last Sent',row.notice_last_sent_at||'-'],['Last Recipient',row.notice_last_recipient||'-'],
-['Delivery Status',row.notice_last_delivery_status||'-'],['Last Error',row.notice_last_error||'-']
+['Notices sent',noticeCount(row)],['Last Sent',noticeWhen(row.notice_last_sent_at)],['Last Recipient',row.notice_last_recipient||'-'],
+['Delivery Status',noticeStatus(row)],['Last Error',row.notice_last_error||'-']
 ];
 fields.forEach(function(f){
 var r2=mkEl('tr');var td1=mkEl('td');td1.textContent=f[0];var td2=mkEl('td');td2.textContent=f[1]||'';
 r2.appendChild(td1);r2.appendChild(td2);tbl.appendChild(r2);
 });
 bx.appendChild(tbl);
+var hh=mkEl('h3');hh.textContent='Notice history';bx.appendChild(hh);
+var history=row.notice_history||[];
+if(!history.length){var hn=mkEl('p');hn.textContent='No delivery history recorded.';bx.appendChild(hn);}
+history.forEach(function(item){var entry=mkEl('p');entry.textContent=({queued:'Queued',sending:'Sending',sent:'Sent',failed:'Failed'})[item.status]+' · '+noticeWhen(item.sent_at||item.created_at)+' · '+item.recipient_email+(item.last_error?' · '+item.last_error:'');bx.appendChild(entry);});
+if(history.length>=20){var more=mkEl('p');more.textContent='Showing the latest 20 notice attempts.';bx.appendChild(more);}
 var ob=mkEl('button');ob.className='btn-s';ob.textContent='Close';ob.addEventListener('click',function(){ov.remove();});
 bx.appendChild(ob);ov.appendChild(bx);document.body.appendChild(ov);
 ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});
 }
 
+setInterval(function(){var pane=document.getElementById('it-enrolment-fees-pane'),view=document.getElementById('view-enrolment');if(!document.hidden&&pane&&!pane.hidden&&view&&view.classList.contains('active')&&!sendingNotices&&!panel.querySelector('tbody input[type=checkbox]:checked'))refreshData();},30000);
 init();
 })();
+
