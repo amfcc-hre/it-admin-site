@@ -28,7 +28,9 @@ Names entered in the audit field identify who made a change. They are not indivi
 
 ### Manual data administration
 
-Open **Data administration** after signing in with the IT Administrator PIN and entering your name. The protected catalogue provides 51 record areas for students, staff, sponsors, duties, reporting configuration, operational records, fees, gate devices and Library records. Use the named form fields, searchable related-record selectors and structured additional fields. Routine entry does not require SQL, database-table access or code changes.
+Open **Data administration** after signing in with the IT Administrator PIN and entering your name. The deployed catalogue provides 51 record areas for students, staff, sponsors, duties, reporting configuration, operational records, fees, gate devices and Library records. Use the named form fields, searchable related-record selectors and structured additional fields. Routine entry does not require SQL, database-table access or code changes.
+
+The review branch adds a 52nd area, **Enrolment corrections**. Apply `supabase/review/it_enrolment_corrections.sql` as a new recorded migration only after release approval, before publishing its updated interface. Completed enrolments must be explicitly reopened with an operator name, reason and `REOPEN` confirmation. The correction form uses labelled student fields, keeps student submissions locked and retains enrolment history. Staff sections are completed and certified through Administration Staff. New enrolments are created through the normal term workflow; this screen cannot delete them.
 
 Every write requires an operator name and a change reason. Existing records have a revision guard so another person's changes cannot be overwritten silently. The removal panel shows linked-record counts before an action. Permanent removal is blocked for referenced records, except a service-duty week can remove its own duty members. Student archive retains history, removes active membership and leadership roles, and clears current or future duties. Restore does not reinstate cleared duties. Recent IT changes appear below the record list.
 
@@ -70,7 +72,7 @@ Automatic email starts disabled. Before switching it on:
 4. Use **Check setup** and confirm the mail key and automatic worker are ready.
 5. Enable automatic email and test one controlled pass submission and status change.
 
-The protected mail worker checks the private outbox every minute when email is enabled, so delivery does not depend on a student's browser remaining open. See `PASS_EMAIL_SETUP.md` in the complete system package for the full DNS, secret, recipient and test procedure.
+The protected mail worker checks the private outbox every minute when email is enabled, so delivery does not depend on a student's browser remaining open. Its source is `supabase/functions/pass-email-worker/index.ts` in `amfcc_student_services`. The reviewed system support manual provides the deployment, secret, recipient and test procedure.
 
 Recipient lists and student notification addresses are stored in private database tables. The browser cannot select recipients for an individual message. The mail API key must never be added to this repository.
 
@@ -108,7 +110,13 @@ Conference Mode does not replace School Term or Holiday Mode. It adds conference
 | `it-admin-fixes.css` | Login and navigation corrections |
 | `shared_config.js` | Supabase project URL and publishable key |
 | `shared_supabase.js` | Shared Supabase browser-client setup |
-| `PASS_EMAIL_SETUP.md` | Complete sender-domain, secret, recipient and test procedure |
+| `record-admin.js` and `record-admin.css` | Protected manual record forms and removal previews |
+| `fee_enrolment_controls.js` | Fee notice review and explicit manual sending |
+| `supabase/migrations/20261003205203_it_record_administration.sql` | Original protected record administration implementation |
+| `supabase/review/it_enrolment_corrections.sql` | Proposed enrolment correction and membership count changes |
+| `supabase/reference/application-functions.sql` | All 254 audited application function definitions; reference only, not a restore script |
+| `supabase/reference/admin-record-catalog.json` | Reviewed 52 area form specification |
+| `supabase/tests` | Transaction rollback verification scripts and execution guidance |
 | `README.md` | Repository and operating instructions |
 
 ## Deployment with GitHub Pages
@@ -122,7 +130,7 @@ Conference Mode does not replace School Term or Holiday Mode. It adds conference
 7. Wait for GitHub Pages to publish the site.
 8. Open the live-site link above and complete the first-use checklist.
 
-Do not run the database migration files when updating only this repository. The shared Supabase database has already been configured.
+Do not replay existing migration files for an interface-only update. Database changes require a newly recorded migration, dependency review and the supplied rollback tests before publishing a dependent interface.
 
 ## First-use checklist
 

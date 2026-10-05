@@ -1,0 +1,5381 @@
+[
+  {
+    "key": "students",
+    "table": "students",
+    "title": "Students",
+    "group": "People",
+    "editable": [
+      "registration_number",
+      "full_name",
+      "gender",
+      "is_active"
+    ],
+    "help": "Add students, correct names and gender, archive leavers, restore students or remove unused records.",
+    "archive_field": "is_active",
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "registration_number",
+        "label": "Registration number",
+        "type": "bigint",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "full_name",
+        "label": "Full name",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "is_active",
+        "label": "Is active",
+        "type": "boolean",
+        "required": true,
+        "default": true,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "gender",
+        "label": "Gender",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [
+          "Male",
+          "Female"
+        ],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "registration_number",
+      "full_name",
+      "gender",
+      "is_active"
+    ]
+  },
+  {
+    "key": "ops_staff_directory",
+    "table": "ops_staff_directory",
+    "title": "Staff reporting directory",
+    "group": "People",
+    "editable": [
+      "department_id",
+      "full_name",
+      "title",
+      "staff_number",
+      "gender",
+      "active"
+    ],
+    "help": "These staff choices are used in reporting. Staff are separate from student allocations.",
+    "archive_field": "active",
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "department_id",
+        "label": "Department",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "full_name",
+        "label": "Full name",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "title",
+        "label": "Title",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "active",
+        "label": "Active",
+        "type": "boolean",
+        "required": true,
+        "default": true,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "staff_number",
+        "label": "Staff number",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "gender",
+        "label": "Gender",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [
+          "F",
+          "M"
+        ],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "department_id",
+      "full_name",
+      "title",
+      "staff_number",
+      "gender"
+    ]
+  },
+  {
+    "key": "sponsors",
+    "table": "sponsors",
+    "title": "Sponsors",
+    "group": "People",
+    "editable": [
+      "name",
+      "phone",
+      "email",
+      "relationship_to_student",
+      "address",
+      "notes"
+    ],
+    "help": "Maintain sponsor contact details. Link sponsors to students separately.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "name",
+        "label": "Name",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "phone",
+        "label": "Phone",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "email",
+        "label": "Email",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "relationship_to_student",
+        "label": "Relationship to student",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "address",
+        "label": "Address",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "notes",
+        "label": "Notes",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "name",
+      "phone",
+      "email",
+      "relationship_to_student",
+      "address"
+    ]
+  },
+  {
+    "key": "student_term_sponsors",
+    "table": "student_term_sponsors",
+    "title": "Student sponsor links",
+    "group": "People",
+    "editable": [
+      "student_id",
+      "term_id",
+      "sponsor_id",
+      "sponsor_name_snapshot",
+      "sponsor_phone_snapshot"
+    ],
+    "help": "Choose the exact student, term and sponsor.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "student_id",
+        "label": "Student",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "term_id",
+        "label": "Term",
+        "type": "bigint",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "academic_terms",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "sponsor_id",
+        "label": "Sponsor",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "sponsors",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "sponsor_name_snapshot",
+        "label": "Sponsor name snapshot",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "sponsor_phone_snapshot",
+        "label": "Sponsor phone snapshot",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "student_id",
+      "term_id",
+      "sponsor_id",
+      "sponsor_name_snapshot",
+      "sponsor_phone_snapshot"
+    ]
+  },
+  {
+    "key": "student_class_year_overrides",
+    "table": "student_class_year_overrides",
+    "title": "Student class corrections",
+    "group": "People",
+    "editable": [
+      "registration_number",
+      "academic_year",
+      "class_year"
+    ],
+    "help": "Correct a student class for a specific academic year.",
+    "archive_field": null,
+    "primary_keys": [
+      "registration_number",
+      "academic_year"
+    ],
+    "fields": [
+      {
+        "name": "registration_number",
+        "label": "Registration number",
+        "type": "bigint",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": true
+      },
+      {
+        "name": "academic_year",
+        "label": "Academic year",
+        "type": "integer",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": true
+      },
+      {
+        "name": "class_year",
+        "label": "Class year",
+        "type": "integer",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "registration_number",
+      "academic_year",
+      "class_year"
+    ]
+  },
+  {
+    "key": "student_support_statuses",
+    "table": "student_support_statuses",
+    "title": "Student support and bed rest",
+    "group": "People",
+    "editable": [
+      "student_id",
+      "status_type",
+      "status_label",
+      "started_at",
+      "expected_end_at",
+      "ended_at",
+      "is_active",
+      "notes"
+    ],
+    "help": "Sensitive support records. Clinical notes remain restricted to authorised staff.",
+    "archive_field": "is_active",
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "student_id",
+        "label": "Student",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "status_type",
+        "label": "Status type",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [
+          "maternity",
+          "bed_rest",
+          "other"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "status_label",
+        "label": "Status label",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "started_at",
+        "label": "Started at",
+        "type": "timestamp with time zone",
+        "required": true,
+        "default": "__now__",
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "expected_end_at",
+        "label": "Expected end at",
+        "type": "timestamp with time zone",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "ended_at",
+        "label": "Ended at",
+        "type": "timestamp with time zone",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "is_active",
+        "label": "Is active",
+        "type": "boolean",
+        "required": true,
+        "default": true,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "notes",
+        "label": "Notes",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "student_id",
+      "status_type",
+      "status_label",
+      "started_at",
+      "expected_end_at"
+    ]
+  },
+  {
+    "key": "accommodation_allocations",
+    "table": "accommodation_allocations",
+    "title": "Accommodation allocations",
+    "group": "People",
+    "editable": [
+      "student_id",
+      "residence",
+      "room",
+      "bed",
+      "term_label",
+      "allocation_status",
+      "is_active",
+      "notes"
+    ],
+    "help": "Enter a hostel or building, room and bed. Use the normal accommodation screen for daily work.",
+    "archive_field": "is_active",
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "student_id",
+        "label": "Student",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "residence",
+        "label": "Residence",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "room",
+        "label": "Room",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "bed",
+        "label": "Bed",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "term_label",
+        "label": "Term label",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "allocation_status",
+        "label": "Allocation status",
+        "type": "text",
+        "required": true,
+        "default": "allocated",
+        "options": [
+          "waiting",
+          "allocated",
+          "checked_in",
+          "checked_out",
+          "cancelled"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "is_active",
+        "label": "Is active",
+        "type": "boolean",
+        "required": true,
+        "default": true,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "notes",
+        "label": "Notes",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "student_id",
+      "residence",
+      "room",
+      "bed",
+      "term_label"
+    ]
+  },
+  {
+    "key": "student_immigration_profiles",
+    "table": "student_immigration_profiles",
+    "title": "Immigration profiles",
+    "group": "People",
+    "editable": [
+      "student_id",
+      "residency_status",
+      "country",
+      "nationality",
+      "sponsor_id",
+      "passport_number",
+      "passport_issue_date",
+      "passport_expiry_date",
+      "permit_type",
+      "permit_number",
+      "permit_issue_date",
+      "permit_expiry_date",
+      "next_action",
+      "next_action_date",
+      "notes"
+    ],
+    "help": "Correct immigration details here. Upload files through the Immigration document tool.",
+    "archive_field": null,
+    "primary_keys": [
+      "student_id"
+    ],
+    "fields": [
+      {
+        "name": "student_id",
+        "label": "Student",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": true
+      },
+      {
+        "name": "residency_status",
+        "label": "Residency status",
+        "type": "text",
+        "required": true,
+        "default": "local",
+        "options": [
+          "local",
+          "international"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "country",
+        "label": "Country",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "nationality",
+        "label": "Nationality",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "sponsor_id",
+        "label": "Sponsor",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "sponsors",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "passport_number",
+        "label": "Passport number",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "passport_issue_date",
+        "label": "Passport issue date",
+        "type": "date",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "passport_expiry_date",
+        "label": "Passport expiry date",
+        "type": "date",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "permit_type",
+        "label": "Permit type",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "permit_number",
+        "label": "Permit number",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "permit_issue_date",
+        "label": "Permit issue date",
+        "type": "date",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "permit_expiry_date",
+        "label": "Permit expiry date",
+        "type": "date",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "next_action",
+        "label": "Next action",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "next_action_date",
+        "label": "Next action date",
+        "type": "date",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "notes",
+        "label": "Notes",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "student_id",
+      "residency_status",
+      "country",
+      "nationality",
+      "sponsor_id"
+    ]
+  },
+  {
+    "key": "ops_student_leadership_roles",
+    "table": "ops_student_leadership_roles",
+    "title": "Student leadership appointments",
+    "group": "Duties",
+    "editable": [
+      "student_id",
+      "leadership_role",
+      "display_order",
+      "active"
+    ],
+    "help": "Appoint or retire leadership roles. Choose an exact active student.",
+    "archive_field": "active",
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "student_id",
+        "label": "Student",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "leadership_role",
+        "label": "Leadership role",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [
+          "senior_prefect",
+          "chairman",
+          "chairman_vice",
+          "chairlady",
+          "chairlady_vice",
+          "campus_manager"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "display_order",
+        "label": "Display order",
+        "type": "integer",
+        "required": true,
+        "default": 100,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "active",
+        "label": "Active",
+        "type": "boolean",
+        "required": true,
+        "default": true,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "student_id",
+      "leadership_role",
+      "display_order",
+      "active"
+    ]
+  },
+  {
+    "key": "ops_weekly_duty_roster",
+    "table": "ops_weekly_duty_roster",
+    "title": "Prefect duty weeks",
+    "group": "Duties",
+    "editable": [
+      "week_start",
+      "prefect_student_id",
+      "senior_prefect_student_id",
+      "notes"
+    ],
+    "help": "Create or correct the Prefect and Senior Prefect on Duty for a Monday beginning week.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "week_start",
+        "label": "Week start",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "notes",
+        "label": "Notes",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "prefect_student_id",
+        "label": "Prefect student",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "senior_prefect_student_id",
+        "label": "Senior prefect student",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "week_start",
+      "prefect_student_id",
+      "senior_prefect_student_id",
+      "notes"
+    ]
+  },
+  {
+    "key": "ops_service_duty_weeks",
+    "table": "ops_service_duty_weeks",
+    "title": "Bell kitchen and toilet duty weeks",
+    "group": "Duties",
+    "editable": [
+      "week_start",
+      "bell_ringer_student_id",
+      "bell_ringer_2_student_id",
+      "kitchen_department_id",
+      "toilet_department_id"
+    ],
+    "help": "Create the duty week first, then add its kitchen and toilet duty members. Removing a week also removes its own duty members.",
+    "archive_field": null,
+    "primary_keys": [
+      "week_start"
+    ],
+    "fields": [
+      {
+        "name": "week_start",
+        "label": "Week start",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": true
+      },
+      {
+        "name": "bell_ringer_student_id",
+        "label": "Bell ringer student",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "kitchen_department_id",
+        "label": "Kitchen department",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "toilet_department_id",
+        "label": "Toilet department",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "bell_ringer_2_student_id",
+        "label": "Bell ringer 2 student",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "week_start",
+      "bell_ringer_student_id",
+      "bell_ringer_2_student_id",
+      "kitchen_department_id",
+      "toilet_department_id"
+    ]
+  },
+  {
+    "key": "ops_service_duty_members",
+    "table": "ops_service_duty_members",
+    "title": "Kitchen and toilet duty members",
+    "group": "Duties",
+    "editable": [
+      "week_start",
+      "duty_type",
+      "student_id",
+      "sort_order"
+    ],
+    "help": "Add up to four students per duty, with no more than two men and two women. Remove an individual assignment here.",
+    "archive_field": null,
+    "primary_keys": [
+      "week_start",
+      "duty_type",
+      "student_id"
+    ],
+    "fields": [
+      {
+        "name": "week_start",
+        "label": "Week start",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_service_duty_weeks",
+          "column": "week_start"
+        },
+        "primary": true
+      },
+      {
+        "name": "duty_type",
+        "label": "Duty type",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [
+          "kitchen",
+          "toilet"
+        ],
+        "reference": null,
+        "primary": true
+      },
+      {
+        "name": "student_id",
+        "label": "Student",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": true
+      },
+      {
+        "name": "sort_order",
+        "label": "Sort order",
+        "type": "integer",
+        "required": true,
+        "default": 100,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "week_start",
+      "duty_type",
+      "student_id",
+      "sort_order"
+    ]
+  },
+  {
+    "key": "ops_gate_duty_assignments",
+    "table": "ops_gate_duty_assignments",
+    "title": "Night gate duty assignments",
+    "group": "Duties",
+    "editable": [
+      "duty_date",
+      "slot_code",
+      "student_id"
+    ],
+    "help": "Create or correct one student per night gate slot. Your IT identity and name are recorded automatically.",
+    "archive_field": null,
+    "primary_keys": [
+      "duty_date",
+      "slot_code"
+    ],
+    "fields": [
+      {
+        "name": "duty_date",
+        "label": "Duty date",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": true
+      },
+      {
+        "name": "slot_code",
+        "label": "Slot code",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [
+          "22_00",
+          "00_02",
+          "02_04"
+        ],
+        "reference": null,
+        "primary": true
+      },
+      {
+        "name": "student_id",
+        "label": "Student",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "duty_date",
+      "slot_code",
+      "student_id"
+    ]
+  },
+  {
+    "key": "ops_department_memberships",
+    "table": "ops_department_memberships",
+    "title": "Department student members",
+    "group": "Duties",
+    "editable": [
+      "department_id",
+      "student_id",
+      "member_role",
+      "starts_on",
+      "ends_on",
+      "active"
+    ],
+    "help": "Assign students and HODs to departments. Use end dates or archive to retain history.",
+    "archive_field": "active",
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "department_id",
+        "label": "Department",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "student_id",
+        "label": "Student",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "member_role",
+        "label": "Member role",
+        "type": "text",
+        "required": true,
+        "default": "member",
+        "options": [
+          "member",
+          "hod",
+          "student_leader",
+          "assistant",
+          "hod_delegate"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "starts_on",
+        "label": "Starts on",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "ends_on",
+        "label": "Ends on",
+        "type": "date",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "active",
+        "label": "Active",
+        "type": "boolean",
+        "required": true,
+        "default": true,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "department_id",
+      "student_id",
+      "member_role",
+      "starts_on",
+      "ends_on"
+    ]
+  },
+  {
+    "key": "ops_departments",
+    "table": "ops_departments",
+    "title": "Department directory",
+    "group": "Configuration",
+    "editable": [
+      "slug",
+      "name",
+      "short_name",
+      "parent_department_id",
+      "department_kind",
+      "workspace_enabled",
+      "restricted_data",
+      "active",
+      "sort_order",
+      "jira_operations_value",
+      "jira_operations_option_id",
+      "jira_project_value",
+      "jira_project_option_id"
+    ],
+    "help": "Maintain names and reporting sections. Set a new department PIN separately in PIN access.",
+    "archive_field": "active",
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "slug",
+        "label": "Slug",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "name",
+        "label": "Name",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "short_name",
+        "label": "Short name",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "parent_department_id",
+        "label": "Parent department",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "department_kind",
+        "label": "Department kind",
+        "type": "text",
+        "required": true,
+        "default": "operations",
+        "options": [
+          "operations",
+          "project",
+          "both",
+          "administration"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "workspace_enabled",
+        "label": "Workspace enabled",
+        "type": "boolean",
+        "required": true,
+        "default": true,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "restricted_data",
+        "label": "Restricted data",
+        "type": "boolean",
+        "required": true,
+        "default": false,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "jira_operations_value",
+        "label": "Jira operations value",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "jira_operations_option_id",
+        "label": "Jira operations option",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "jira_project_value",
+        "label": "Jira project value",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "jira_project_option_id",
+        "label": "Jira project option",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "active",
+        "label": "Active",
+        "type": "boolean",
+        "required": true,
+        "default": true,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "sort_order",
+        "label": "Sort order",
+        "type": "integer",
+        "required": true,
+        "default": 100,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "slug",
+      "name",
+      "short_name",
+      "parent_department_id",
+      "department_kind"
+    ]
+  },
+  {
+    "key": "ops_time_slots",
+    "table": "ops_time_slots",
+    "title": "Work session timetable",
+    "group": "Configuration",
+    "editable": [
+      "code",
+      "name",
+      "start_time",
+      "end_time",
+      "sort_order",
+      "active"
+    ],
+    "help": "Enter session times. The end time must be later than the start time.",
+    "archive_field": "active",
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "code",
+        "label": "Code",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "name",
+        "label": "Name",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "start_time",
+        "label": "Start time",
+        "type": "time without time zone",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "end_time",
+        "label": "End time",
+        "type": "time without time zone",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "sort_order",
+        "label": "Sort order",
+        "type": "integer",
+        "required": true,
+        "default": 100,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "active",
+        "label": "Active",
+        "type": "boolean",
+        "required": true,
+        "default": true,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "code",
+      "name",
+      "start_time",
+      "end_time",
+      "sort_order"
+    ]
+  },
+  {
+    "key": "ops_units",
+    "table": "ops_units",
+    "title": "Department reporting units",
+    "group": "Configuration",
+    "editable": [
+      "department_id",
+      "unit_type",
+      "code",
+      "name",
+      "metadata",
+      "active",
+      "sort_order"
+    ],
+    "help": "Enter units used by activity and reporting records.",
+    "archive_field": "active",
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "department_id",
+        "label": "Department",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "unit_type",
+        "label": "Unit type",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "code",
+        "label": "Code",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "name",
+        "label": "Name",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "metadata",
+        "label": "Metadata",
+        "type": "jsonb",
+        "required": true,
+        "default": {},
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "active",
+        "label": "Active",
+        "type": "boolean",
+        "required": true,
+        "default": true,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "sort_order",
+        "label": "Sort order",
+        "type": "integer",
+        "required": true,
+        "default": 100,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "department_id",
+      "unit_type",
+      "code",
+      "name",
+      "metadata"
+    ]
+  },
+  {
+    "key": "ops_metric_definitions",
+    "table": "ops_metric_definitions",
+    "title": "Reporting figure definitions",
+    "group": "Configuration",
+    "editable": [
+      "department_id",
+      "code",
+      "label",
+      "unit",
+      "value_type",
+      "aggregation",
+      "direction",
+      "amber_threshold",
+      "red_threshold",
+      "configuration",
+      "sort_order",
+      "active"
+    ],
+    "help": "Define reporting figures and how period reports aggregate them.",
+    "archive_field": "active",
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "department_id",
+        "label": "Department",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "code",
+        "label": "Code",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "label",
+        "label": "Label",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "unit",
+        "label": "Unit",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "value_type",
+        "label": "Value type",
+        "type": "text",
+        "required": true,
+        "default": "number",
+        "options": [
+          "number",
+          "text",
+          "boolean"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "aggregation",
+        "label": "Aggregation",
+        "type": "text",
+        "required": true,
+        "default": "sum",
+        "options": [
+          "sum",
+          "average",
+          "latest",
+          "minimum",
+          "maximum",
+          "manual"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "direction",
+        "label": "Direction",
+        "type": "text",
+        "required": true,
+        "default": "informational",
+        "options": [
+          "higher_is_better",
+          "lower_is_better",
+          "target_range",
+          "informational"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "amber_threshold",
+        "label": "Amber threshold",
+        "type": "numeric",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "red_threshold",
+        "label": "Red threshold",
+        "type": "numeric",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "configuration",
+        "label": "Configuration",
+        "type": "jsonb",
+        "required": true,
+        "default": {},
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "sort_order",
+        "label": "Sort order",
+        "type": "integer",
+        "required": true,
+        "default": 100,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "active",
+        "label": "Active",
+        "type": "boolean",
+        "required": true,
+        "default": true,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "department_id",
+      "code",
+      "label",
+      "unit",
+      "value_type"
+    ]
+  },
+  {
+    "key": "ops_department_group_counts",
+    "table": "ops_department_group_counts",
+    "title": "Department cohort totals",
+    "group": "Configuration",
+    "editable": [
+      "department_id",
+      "group_code",
+      "member_count"
+    ],
+    "help": "Correct standing cohort totals only after reviewing membership.",
+    "archive_field": null,
+    "primary_keys": [
+      "department_id",
+      "group_code"
+    ],
+    "fields": [
+      {
+        "name": "department_id",
+        "label": "Department",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": true
+      },
+      {
+        "name": "group_code",
+        "label": "Group code",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [
+          "year1_men",
+          "year1_ladies",
+          "year2_men",
+          "year2_ladies"
+        ],
+        "reference": null,
+        "primary": true
+      },
+      {
+        "name": "member_count",
+        "label": "Member count",
+        "type": "integer",
+        "required": true,
+        "default": 0,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "department_id",
+      "group_code",
+      "member_count"
+    ]
+  },
+  {
+    "key": "ops_department_schedule_rules",
+    "table": "ops_department_schedule_rules",
+    "title": "Standing work schedules",
+    "group": "Configuration",
+    "editable": [
+      "department_id",
+      "active",
+      "days_of_week",
+      "slot_codes"
+    ],
+    "help": "Choose the days and sessions when a department is always on.",
+    "archive_field": "active",
+    "primary_keys": [
+      "department_id"
+    ],
+    "fields": [
+      {
+        "name": "department_id",
+        "label": "Department",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": true
+      },
+      {
+        "name": "active",
+        "label": "Active",
+        "type": "boolean",
+        "required": true,
+        "default": false,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "days_of_week",
+        "label": "Days of week",
+        "type": "ARRAY",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false,
+        "array_options": [
+          {
+            "value": 1,
+            "label": "Monday"
+          },
+          {
+            "value": 2,
+            "label": "Tuesday"
+          },
+          {
+            "value": 3,
+            "label": "Wednesday"
+          },
+          {
+            "value": 4,
+            "label": "Thursday"
+          },
+          {
+            "value": 5,
+            "label": "Friday"
+          },
+          {
+            "value": 6,
+            "label": "Saturday"
+          },
+          {
+            "value": 7,
+            "label": "Sunday"
+          }
+        ]
+      },
+      {
+        "name": "slot_codes",
+        "label": "Slot codes",
+        "type": "ARRAY",
+        "required": true,
+        "default": "{}",
+        "options": [],
+        "reference": null,
+        "primary": false,
+        "array_reference": "ops_time_slots"
+      }
+    ],
+    "display_fields": [
+      "department_id",
+      "active",
+      "days_of_week",
+      "slot_codes"
+    ]
+  },
+  {
+    "key": "ops_department_plans",
+    "table": "ops_department_plans",
+    "title": "Department plans",
+    "group": "Operations",
+    "editable": [
+      "department_id",
+      "starts_on",
+      "ends_on",
+      "plan_type",
+      "title",
+      "details",
+      "status"
+    ],
+    "help": "Create and correct daily or weekly plans.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "department_id",
+        "label": "Department",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "starts_on",
+        "label": "Starts on",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "ends_on",
+        "label": "Ends on",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "plan_type",
+        "label": "Plan type",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "title",
+        "label": "Title",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "details",
+        "label": "Details",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "status",
+        "label": "Status",
+        "type": "text",
+        "required": true,
+        "default": "planned",
+        "options": [
+          "planned",
+          "in_progress",
+          "completed",
+          "cancelled"
+        ],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "department_id",
+      "starts_on",
+      "ends_on",
+      "plan_type",
+      "title"
+    ]
+  },
+  {
+    "key": "ops_stock_items",
+    "table": "ops_stock_items",
+    "title": "Department stock catalogue",
+    "group": "Operations",
+    "editable": [
+      "department_id",
+      "item_name",
+      "category",
+      "unit",
+      "reorder_level",
+      "active"
+    ],
+    "help": "Configure stock names and minimum levels. IT assets have their own register.",
+    "archive_field": "active",
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "department_id",
+        "label": "Department",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "item_name",
+        "label": "Item name",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "category",
+        "label": "Category",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "unit",
+        "label": "Unit",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "reorder_level",
+        "label": "Reorder level",
+        "type": "numeric",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "active",
+        "label": "Active",
+        "type": "boolean",
+        "required": true,
+        "default": true,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "department_id",
+      "item_name",
+      "category",
+      "unit",
+      "reorder_level"
+    ]
+  },
+  {
+    "key": "ops_stock_movements",
+    "table": "ops_stock_movements",
+    "title": "Department stock movements",
+    "group": "Operations",
+    "editable": [
+      "stock_item_id",
+      "department_id",
+      "movement_date",
+      "movement_type",
+      "quantity_delta",
+      "notes"
+    ],
+    "help": "Record receipts as positive amounts and usage as negative amounts.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "stock_item_id",
+        "label": "Stock item",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_stock_items",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "department_id",
+        "label": "Department",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "movement_date",
+        "label": "Movement date",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "movement_type",
+        "label": "Movement type",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [
+          "received",
+          "used",
+          "wasted",
+          "adjustment"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "quantity_delta",
+        "label": "Quantity delta",
+        "type": "numeric",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "notes",
+        "label": "Notes",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "stock_item_id",
+      "department_id",
+      "movement_date",
+      "movement_type",
+      "quantity_delta"
+    ]
+  },
+  {
+    "key": "ops_operational_logs",
+    "table": "ops_operational_logs",
+    "title": "Department activity logs",
+    "group": "Operations",
+    "editable": [
+      "department_id",
+      "record_date",
+      "log_type",
+      "title",
+      "quantity",
+      "unit",
+      "notes"
+    ],
+    "help": "Enter operational quantities and notes.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "department_id",
+        "label": "Department",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "record_date",
+        "label": "Record date",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "log_type",
+        "label": "Log type",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "title",
+        "label": "Title",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "quantity",
+        "label": "Quantity",
+        "type": "numeric",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "unit",
+        "label": "Unit",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "notes",
+        "label": "Notes",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "department_id",
+      "record_date",
+      "log_type",
+      "title",
+      "quantity"
+    ]
+  },
+  {
+    "key": "ops_activity_records",
+    "table": "ops_activity_records",
+    "title": "Reporting activity records",
+    "group": "Operations",
+    "editable": [
+      "department_id",
+      "record_date",
+      "entry_type",
+      "unit_id",
+      "task_id",
+      "session_id",
+      "report_id",
+      "staff_name",
+      "payload"
+    ],
+    "help": "Enter activity data through named form fields.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "department_id",
+        "label": "Department",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "record_date",
+        "label": "Record date",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "entry_type",
+        "label": "Entry type",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "unit_id",
+        "label": "Unit",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_units",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "task_id",
+        "label": "Task",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_tasks",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "session_id",
+        "label": "Session",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_work_sessions",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "report_id",
+        "label": "Report",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_reports",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "staff_name",
+        "label": "Staff name",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "payload",
+        "label": "Payload",
+        "type": "jsonb",
+        "required": true,
+        "default": {},
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "department_id",
+      "record_date",
+      "entry_type",
+      "unit_id",
+      "task_id"
+    ]
+  },
+  {
+    "key": "ops_tasks",
+    "table": "ops_tasks",
+    "title": "Work tasks",
+    "group": "Operations",
+    "editable": [
+      "department_id",
+      "parent_task_id",
+      "title",
+      "description",
+      "task_type",
+      "cadence",
+      "priority",
+      "status",
+      "due_date",
+      "requested_people",
+      "external_people_allowed",
+      "owner_name",
+      "metadata"
+    ],
+    "help": "Use work submission for normal scheduling. IT can correct or cancel records here.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "department_id",
+        "label": "Department",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "parent_task_id",
+        "label": "Parent task",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_tasks",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "title",
+        "label": "Title",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "description",
+        "label": "Description",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "task_type",
+        "label": "Task type",
+        "type": "text",
+        "required": true,
+        "default": "ad_hoc",
+        "options": [
+          "regular",
+          "ad_hoc",
+          "project",
+          "maintenance",
+          "building",
+          "incident_follow_up",
+          "emergency"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "cadence",
+        "label": "Cadence",
+        "type": "text",
+        "required": true,
+        "default": "once",
+        "options": [
+          "once",
+          "daily",
+          "weekly",
+          "monthly",
+          "quarterly"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "priority",
+        "label": "Priority",
+        "type": "text",
+        "required": true,
+        "default": "medium",
+        "options": [
+          "low",
+          "medium",
+          "high",
+          "critical"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "status",
+        "label": "Status",
+        "type": "text",
+        "required": true,
+        "default": "backlog",
+        "options": [
+          "backlog",
+          "ready",
+          "requested",
+          "planned",
+          "in_progress",
+          "blocked",
+          "done",
+          "cancelled"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "due_date",
+        "label": "Due date",
+        "type": "date",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "requested_people",
+        "label": "Requested people",
+        "type": "integer",
+        "required": true,
+        "default": 0,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "external_people_allowed",
+        "label": "External people allowed",
+        "type": "boolean",
+        "required": true,
+        "default": true,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "owner_name",
+        "label": "Owner name",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "metadata",
+        "label": "Metadata",
+        "type": "jsonb",
+        "required": true,
+        "default": {},
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "department_id",
+      "parent_task_id",
+      "title",
+      "description",
+      "task_type"
+    ]
+  },
+  {
+    "key": "ops_session_requests",
+    "table": "ops_session_requests",
+    "title": "Work requests",
+    "group": "Operations",
+    "editable": [
+      "department_id",
+      "work_date",
+      "slot_id",
+      "requested_headcount",
+      "allocated_headcount",
+      "request_notes",
+      "decision_notes",
+      "requested_by_name",
+      "status",
+      "request_kind"
+    ],
+    "help": "Correct work requests after reviewing their linked sessions.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "department_id",
+        "label": "Department",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "work_date",
+        "label": "Work date",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "slot_id",
+        "label": "Slot",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_time_slots",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "requested_headcount",
+        "label": "Requested headcount",
+        "type": "integer",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "allocated_headcount",
+        "label": "Allocated headcount",
+        "type": "integer",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "request_notes",
+        "label": "Request notes",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "decision_notes",
+        "label": "Decision notes",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "requested_by_name",
+        "label": "Requested by name",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "status",
+        "label": "Status",
+        "type": "text",
+        "required": true,
+        "default": "pending",
+        "options": [
+          "pending",
+          "approved",
+          "partially_approved",
+          "declined",
+          "cancelled"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "request_kind",
+        "label": "Request kind",
+        "type": "text",
+        "required": true,
+        "default": "planned",
+        "options": [
+          "planned",
+          "unexpected"
+        ],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "department_id",
+      "work_date",
+      "slot_id",
+      "requested_headcount",
+      "allocated_headcount"
+    ]
+  },
+  {
+    "key": "ops_session_request_tasks",
+    "table": "ops_session_request_tasks",
+    "title": "Tasks attached to requests",
+    "group": "Operations",
+    "editable": [
+      "request_id",
+      "task_id",
+      "people_needed"
+    ],
+    "help": "Attach an existing task to an existing request.",
+    "archive_field": null,
+    "primary_keys": [
+      "request_id",
+      "task_id"
+    ],
+    "fields": [
+      {
+        "name": "request_id",
+        "label": "Request",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_session_requests",
+          "column": "id"
+        },
+        "primary": true
+      },
+      {
+        "name": "task_id",
+        "label": "Task",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_tasks",
+          "column": "id"
+        },
+        "primary": true
+      },
+      {
+        "name": "people_needed",
+        "label": "People needed",
+        "type": "integer",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "request_id",
+      "task_id",
+      "people_needed"
+    ]
+  },
+  {
+    "key": "ops_work_sessions",
+    "table": "ops_work_sessions",
+    "title": "Published work sessions",
+    "group": "Operations",
+    "editable": [
+      "request_id",
+      "department_id",
+      "work_date",
+      "slot_id",
+      "allocated_headcount",
+      "status",
+      "leadership_notes",
+      "department_notes",
+      "allocation_model"
+    ],
+    "help": "Correct existing published sessions. Conference Mode still enforces server rules.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "request_id",
+        "label": "Request",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_session_requests",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "department_id",
+        "label": "Department",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "work_date",
+        "label": "Work date",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "slot_id",
+        "label": "Slot",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_time_slots",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "allocated_headcount",
+        "label": "Allocated headcount",
+        "type": "integer",
+        "required": true,
+        "default": 0,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "status",
+        "label": "Status",
+        "type": "text",
+        "required": true,
+        "default": "draft",
+        "options": [
+          "draft",
+          "published",
+          "in_progress",
+          "completed",
+          "cancelled"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "leadership_notes",
+        "label": "Leadership notes",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "department_notes",
+        "label": "Department notes",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "allocation_model",
+        "label": "Allocation model",
+        "type": "text",
+        "required": true,
+        "default": "legacy",
+        "options": [
+          "legacy",
+          "members_plus_groups"
+        ],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "request_id",
+      "department_id",
+      "work_date",
+      "slot_id",
+      "allocated_headcount"
+    ]
+  },
+  {
+    "key": "ops_session_tasks",
+    "table": "ops_session_tasks",
+    "title": "Tasks attached to sessions",
+    "group": "Operations",
+    "editable": [
+      "session_id",
+      "task_id",
+      "planned_people",
+      "sequence"
+    ],
+    "help": "Maintain task links and order within sessions.",
+    "archive_field": null,
+    "primary_keys": [
+      "session_id",
+      "task_id"
+    ],
+    "fields": [
+      {
+        "name": "session_id",
+        "label": "Session",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_work_sessions",
+          "column": "id"
+        },
+        "primary": true
+      },
+      {
+        "name": "task_id",
+        "label": "Task",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_tasks",
+          "column": "id"
+        },
+        "primary": true
+      },
+      {
+        "name": "planned_people",
+        "label": "Planned people",
+        "type": "integer",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "sequence",
+        "label": "Sequence",
+        "type": "integer",
+        "required": true,
+        "default": 100,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "session_id",
+      "task_id",
+      "planned_people",
+      "sequence"
+    ]
+  },
+  {
+    "key": "ops_session_assignments",
+    "table": "ops_session_assignments",
+    "title": "Named session assignments",
+    "group": "Operations",
+    "editable": [
+      "session_id",
+      "student_id",
+      "home_department_id",
+      "assignment_source",
+      "attendance",
+      "notes"
+    ],
+    "help": "Correct named assignments. Normal leadership allocation uses cohort totals.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "session_id",
+        "label": "Session",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_work_sessions",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "student_id",
+        "label": "Student",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "home_department_id",
+        "label": "Home department",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "assignment_source",
+        "label": "Assignment source",
+        "type": "text",
+        "required": true,
+        "default": "manual",
+        "options": [
+          "home_department",
+          "external",
+          "manual"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "attendance",
+        "label": "Attendance",
+        "type": "text",
+        "required": true,
+        "default": "planned",
+        "options": [
+          "planned",
+          "present",
+          "absent",
+          "excused"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "notes",
+        "label": "Notes",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "session_id",
+      "student_id",
+      "home_department_id",
+      "assignment_source",
+      "attendance"
+    ]
+  },
+  {
+    "key": "ops_session_group_allocations",
+    "table": "ops_session_group_allocations",
+    "title": "Session cohort allocations",
+    "group": "Operations",
+    "editable": [
+      "session_id",
+      "group_code",
+      "headcount"
+    ],
+    "help": "Correct cohort totals assigned to a published session.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "session_id",
+        "label": "Session",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_work_sessions",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "group_code",
+        "label": "Group code",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [
+          "year1_men",
+          "year1_ladies",
+          "year2_men",
+          "year2_ladies"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "headcount",
+        "label": "Headcount",
+        "type": "integer",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "session_id",
+      "group_code",
+      "headcount"
+    ]
+  },
+  {
+    "key": "ops_session_department_members",
+    "table": "ops_session_department_members",
+    "title": "Session department members",
+    "group": "Operations",
+    "editable": [
+      "session_id",
+      "student_id",
+      "member_role"
+    ],
+    "help": "Maintain the department members attached to a published session.",
+    "archive_field": null,
+    "primary_keys": [
+      "session_id",
+      "student_id"
+    ],
+    "fields": [
+      {
+        "name": "session_id",
+        "label": "Session",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_work_sessions",
+          "column": "id"
+        },
+        "primary": true
+      },
+      {
+        "name": "student_id",
+        "label": "Student",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": true
+      },
+      {
+        "name": "member_role",
+        "label": "Member role",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "session_id",
+      "student_id",
+      "member_role"
+    ]
+  },
+  {
+    "key": "ops_reports",
+    "table": "ops_reports",
+    "title": "Department reports",
+    "group": "Operations",
+    "editable": [
+      "department_id",
+      "report_type",
+      "period_start",
+      "period_end",
+      "report_date",
+      "prepared_by_name",
+      "staff_on_duty",
+      "summary",
+      "work_completed",
+      "work_open",
+      "challenges",
+      "action_required",
+      "stock_equipment",
+      "risks",
+      "support_required",
+      "next_period_plan",
+      "payload"
+    ],
+    "help": "Correct report content. Report approval transitions remain in the normal reporting screen.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "department_id",
+        "label": "Department",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "report_type",
+        "label": "Report type",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [
+          "daily",
+          "weekly",
+          "monthly"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "period_start",
+        "label": "Period start",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "period_end",
+        "label": "Period end",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "report_date",
+        "label": "Report date",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "prepared_by_name",
+        "label": "Prepared by name",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "staff_on_duty",
+        "label": "Staff on duty",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "summary",
+        "label": "Summary",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "work_completed",
+        "label": "Work completed",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "work_open",
+        "label": "Work open",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "challenges",
+        "label": "Challenges",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "action_required",
+        "label": "Action required",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "stock_equipment",
+        "label": "Stock equipment",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "risks",
+        "label": "Risks",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "support_required",
+        "label": "Support required",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "next_period_plan",
+        "label": "Next period plan",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "payload",
+        "label": "Payload",
+        "type": "jsonb",
+        "required": true,
+        "default": {},
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "department_id",
+      "report_type",
+      "period_start",
+      "period_end",
+      "report_date"
+    ]
+  },
+  {
+    "key": "ops_report_metrics",
+    "table": "ops_report_metrics",
+    "title": "Report figures",
+    "group": "Operations",
+    "editable": [
+      "report_id",
+      "metric_definition_id",
+      "metric_name",
+      "unit",
+      "target_value",
+      "actual_value",
+      "status",
+      "commentary",
+      "source",
+      "sort_order"
+    ],
+    "help": "Enter targets, actual figures and explanatory notes.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "report_id",
+        "label": "Report",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_reports",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "metric_definition_id",
+        "label": "Metric definition",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_metric_definitions",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "metric_name",
+        "label": "Metric name",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "unit",
+        "label": "Unit",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "target_value",
+        "label": "Target value",
+        "type": "numeric",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "actual_value",
+        "label": "Actual value",
+        "type": "numeric",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "status",
+        "label": "Status",
+        "type": "text",
+        "required": true,
+        "default": "not_set",
+        "options": [
+          "green",
+          "amber",
+          "red",
+          "not_set"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "commentary",
+        "label": "Commentary",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "source",
+        "label": "Source",
+        "type": "text",
+        "required": true,
+        "default": "manual",
+        "options": [
+          "manual",
+          "activity",
+          "calculated"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "sort_order",
+        "label": "Sort order",
+        "type": "integer",
+        "required": true,
+        "default": 100,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "report_id",
+      "metric_definition_id",
+      "metric_name",
+      "unit",
+      "target_value"
+    ]
+  },
+  {
+    "key": "ops_management_actions",
+    "table": "ops_management_actions",
+    "title": "Management follow up actions",
+    "group": "Operations",
+    "editable": [
+      "department_id",
+      "report_id",
+      "task_id",
+      "summary",
+      "description",
+      "priority",
+      "status",
+      "owner_name",
+      "due_date"
+    ],
+    "help": "Maintain follow up work and its owner.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "department_id",
+        "label": "Department",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "report_id",
+        "label": "Report",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_reports",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "task_id",
+        "label": "Task",
+        "type": "uuid",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_tasks",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "summary",
+        "label": "Summary",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "description",
+        "label": "Description",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "priority",
+        "label": "Priority",
+        "type": "text",
+        "required": true,
+        "default": "medium",
+        "options": [
+          "low",
+          "medium",
+          "high",
+          "critical"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "status",
+        "label": "Status",
+        "type": "text",
+        "required": true,
+        "default": "open",
+        "options": [
+          "open",
+          "in_progress",
+          "blocked",
+          "done",
+          "cancelled"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "owner_name",
+        "label": "Owner name",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "due_date",
+        "label": "Due date",
+        "type": "date",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "department_id",
+      "report_id",
+      "task_id",
+      "summary",
+      "description"
+    ]
+  },
+  {
+    "key": "ops_transfers",
+    "table": "ops_transfers",
+    "title": "Transfers between departments",
+    "group": "Operations",
+    "editable": [
+      "transfer_date",
+      "from_department_id",
+      "to_department_id",
+      "reference",
+      "status",
+      "sent_by_name",
+      "received_by_name",
+      "notes"
+    ],
+    "help": "Correct the transfer header after checking the receiving department.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "transfer_date",
+        "label": "Transfer date",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "from_department_id",
+        "label": "From department",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "to_department_id",
+        "label": "To department",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_departments",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "reference",
+        "label": "Reference",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "status",
+        "label": "Status",
+        "type": "text",
+        "required": true,
+        "default": "sent",
+        "options": [
+          "draft",
+          "sent",
+          "received",
+          "disputed",
+          "cancelled"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "sent_by_name",
+        "label": "Sent by name",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "received_by_name",
+        "label": "Received by name",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "notes",
+        "label": "Notes",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "transfer_date",
+      "from_department_id",
+      "to_department_id",
+      "reference",
+      "status"
+    ]
+  },
+  {
+    "key": "ops_transfer_items",
+    "table": "ops_transfer_items",
+    "title": "Transfer items",
+    "group": "Operations",
+    "editable": [
+      "transfer_id",
+      "item_name",
+      "quantity",
+      "unit",
+      "notes"
+    ],
+    "help": "Enter the items and quantities attached to a transfer.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "transfer_id",
+        "label": "Transfer",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "ops_transfers",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "item_name",
+        "label": "Item name",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "quantity",
+        "label": "Quantity",
+        "type": "numeric",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "unit",
+        "label": "Unit",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "notes",
+        "label": "Notes",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "transfer_id",
+      "item_name",
+      "quantity",
+      "unit",
+      "notes"
+    ]
+  },
+  {
+    "key": "student_term_fee_status",
+    "table": "student_term_fee_status",
+    "title": "Student fee records",
+    "group": "Student services",
+    "editable": [
+      "student_id",
+      "term_id",
+      "fees_paid",
+      "notes",
+      "arrears_previous_terms",
+      "amount_paid_current_term",
+      "outstanding_balance",
+      "payment_plan",
+      "notice_text",
+      "notice_source_date",
+      "notice_source_row",
+      "notice_export_name"
+    ],
+    "help": "Enter fee and notice information manually. This form never sends a notice.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "student_id",
+        "label": "Student",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "term_id",
+        "label": "Term",
+        "type": "bigint",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "academic_terms",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "fees_paid",
+        "label": "Fees paid",
+        "type": "boolean",
+        "required": true,
+        "default": true,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "notes",
+        "label": "Notes",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "arrears_previous_terms",
+        "label": "Arrears previous terms",
+        "type": "numeric",
+        "required": true,
+        "default": 0,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "amount_paid_current_term",
+        "label": "Amount paid current term",
+        "type": "numeric",
+        "required": true,
+        "default": 0,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "outstanding_balance",
+        "label": "Outstanding balance",
+        "type": "numeric",
+        "required": true,
+        "default": 0,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "payment_plan",
+        "label": "Payment plan",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "notice_text",
+        "label": "Notice text",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "notice_source_date",
+        "label": "Notice source date",
+        "type": "date",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "notice_source_row",
+        "label": "Notice source row",
+        "type": "integer",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "notice_export_name",
+        "label": "Notice export name",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "student_id",
+      "term_id",
+      "fees_paid",
+      "notes",
+      "arrears_previous_terms"
+    ]
+  },
+  {
+    "key": "academic_terms",
+    "table": "academic_terms",
+    "title": "Academic terms",
+    "group": "Student services",
+    "editable": [
+      "academic_year",
+      "term_number",
+      "term_name",
+      "fees_due_date",
+      "registration_form_schema"
+    ],
+    "help": "Maintain term names fee deadlines and form field definitions. Open or close enrolment using Term enrolment.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "academic_year",
+        "label": "Academic year",
+        "type": "integer",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "term_number",
+        "label": "Term number",
+        "type": "integer",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "term_name",
+        "label": "Term name",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "fees_due_date",
+        "label": "Fees due date",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "registration_form_schema",
+        "label": "Registration form schema",
+        "type": "jsonb",
+        "required": true,
+        "default": {
+          "fees": [],
+          "admin": [],
+          "final": [],
+          "student": [],
+          "configured": false
+        },
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "academic_year",
+      "term_number",
+      "term_name",
+      "fees_due_date",
+      "registration_form_schema"
+    ]
+  },
+  {
+    "key": "check_ins",
+    "table": "check_ins",
+    "title": "Meal collection records",
+    "group": "Student services",
+    "editable": [
+      "student_id",
+      "service_date",
+      "meal_session",
+      "check_in_source",
+      "child_portions"
+    ],
+    "help": "Correct an individual collection record. Conference rules remain enforced.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "student_id",
+        "label": "Student",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "meal_session",
+        "label": "Meal session",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [
+          "Breakfast",
+          "Lunch",
+          "Break-fast 4pm",
+          "Supper"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "service_date",
+        "label": "Service date",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "check_in_source",
+        "label": "Check in source",
+        "type": "text",
+        "required": true,
+        "default": "staff",
+        "options": [
+          "staff",
+          "student_self",
+          "student_collection",
+          "operations_scanner",
+          "operations_camera",
+          "operations_manual"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "child_portions",
+        "label": "Child portions",
+        "type": "integer",
+        "required": true,
+        "default": 0,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "student_id",
+      "service_date",
+      "meal_session",
+      "check_in_source",
+      "child_portions"
+    ]
+  },
+  {
+    "key": "meal_plans",
+    "table": "meal_plans",
+    "title": "Advance meal check in records",
+    "group": "Student services",
+    "editable": [
+      "student_id",
+      "service_date",
+      "meal_session",
+      "plan_source"
+    ],
+    "help": "Correct preparation check in records separately from meal collection.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "student_id",
+        "label": "Student",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "service_date",
+        "label": "Service date",
+        "type": "date",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "meal_session",
+        "label": "Meal session",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [
+          "Breakfast",
+          "Lunch",
+          "Break-fast 4pm"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "plan_source",
+        "label": "Plan source",
+        "type": "text",
+        "required": true,
+        "default": "student_self",
+        "options": [
+          "student_self",
+          "staff"
+        ],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "student_id",
+      "service_date",
+      "meal_session",
+      "plan_source"
+    ]
+  },
+  {
+    "key": "campus_movements",
+    "table": "campus_movements",
+    "title": "Campus movements",
+    "group": "Student services",
+    "editable": [
+      "student_id",
+      "direction",
+      "gate_device_id",
+      "scanned_at",
+      "movement_source"
+    ],
+    "help": "Correct campus movement records. Choose the actual direction and time.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "student_id",
+        "label": "Student",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "direction",
+        "label": "Direction",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [
+          "IN",
+          "OUT"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "scanned_at",
+        "label": "Scanned at",
+        "type": "timestamp with time zone",
+        "required": true,
+        "default": "__now__",
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "gate_device_id",
+        "label": "Gate device",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "gate_devices",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "movement_source",
+        "label": "Movement source",
+        "type": "text",
+        "required": true,
+        "default": "scanner",
+        "options": [
+          "scanner",
+          "camera",
+          "manual",
+          "administrative_update"
+        ],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "student_id",
+      "direction",
+      "gate_device_id",
+      "scanned_at",
+      "movement_source"
+    ]
+  },
+  {
+    "key": "gate_passes",
+    "table": "gate_passes",
+    "title": "Gate pass records",
+    "group": "Student services",
+    "editable": [
+      "student_id",
+      "destination",
+      "reason",
+      "departure_at",
+      "expected_return_at",
+      "contact_details",
+      "paper_pass_checked"
+    ],
+    "help": "Correct pass details. Use the approval screens for decisions and returns.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "student_id",
+        "label": "Student",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "destination",
+        "label": "Destination",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "reason",
+        "label": "Reason",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "departure_at",
+        "label": "Departure at",
+        "type": "timestamp with time zone",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "expected_return_at",
+        "label": "Expected return at",
+        "type": "timestamp with time zone",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "contact_details",
+        "label": "Contact details",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "paper_pass_checked",
+        "label": "Paper pass checked",
+        "type": "boolean",
+        "required": true,
+        "default": false,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "student_id",
+      "destination",
+      "reason",
+      "departure_at",
+      "expected_return_at"
+    ]
+  },
+  {
+    "key": "gate_pass_members",
+    "table": "gate_pass_members",
+    "title": "Group gate pass members",
+    "group": "Student services",
+    "editable": [
+      "pass_id",
+      "student_id",
+      "is_primary"
+    ],
+    "help": "Maintain group membership after checking the whole pass.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "pass_id",
+        "label": "Pass",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "gate_passes",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "student_id",
+        "label": "Student",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "is_primary",
+        "label": "Is primary",
+        "type": "boolean",
+        "required": true,
+        "default": false,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "pass_id",
+      "student_id",
+      "is_primary"
+    ]
+  },
+  {
+    "key": "gate_devices",
+    "table": "gate_devices",
+    "title": "Gate terminal devices",
+    "group": "Student services",
+    "editable": [
+      "device_name",
+      "location",
+      "is_active"
+    ],
+    "help": "Create an authorised gate device here and use its pairing token on the terminal. Existing device tokens can be replaced through the protected form.",
+    "archive_field": "is_active",
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "device_name",
+        "label": "Device name",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "location",
+        "label": "Location",
+        "type": "text",
+        "required": true,
+        "default": "Main Gate",
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "is_active",
+        "label": "Is active",
+        "type": "boolean",
+        "required": true,
+        "default": true,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "device_name",
+      "location",
+      "is_active"
+    ]
+  },
+  {
+    "key": "gate_duty_records",
+    "table": "gate_duty_records",
+    "title": "Gate duty attendance records",
+    "group": "Student services",
+    "editable": [
+      "student_id",
+      "direction",
+      "scanned_at",
+      "gate_device_id",
+      "record_source"
+    ],
+    "help": "Correct or remove an individual duty attendance record after reviewing the scan time.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "student_id",
+        "label": "Student",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "students",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "direction",
+        "label": "Direction",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [
+          "IN",
+          "OUT"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "scanned_at",
+        "label": "Scanned at",
+        "type": "timestamp with time zone",
+        "required": true,
+        "default": "__now__",
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "gate_device_id",
+        "label": "Gate device",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "gate_devices",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "record_source",
+        "label": "Record source",
+        "type": "text",
+        "required": true,
+        "default": "scanner",
+        "options": [
+          "scanner",
+          "manual"
+        ],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "student_id",
+      "direction",
+      "scanned_at",
+      "gate_device_id",
+      "record_source"
+    ]
+  },
+  {
+    "key": "library_titles",
+    "table": "library_titles",
+    "title": "Library titles",
+    "group": "Library",
+    "editable": [
+      "isbn",
+      "title",
+      "subtitle",
+      "author",
+      "publisher",
+      "publication_year",
+      "category",
+      "shelf_location",
+      "notes",
+      "active"
+    ],
+    "help": "Enter book details manually or use ISBN lookup in Library.",
+    "archive_field": "active",
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "isbn",
+        "label": "Isbn",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "title",
+        "label": "Title",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "subtitle",
+        "label": "Subtitle",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "author",
+        "label": "Author",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "publisher",
+        "label": "Publisher",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "publication_year",
+        "label": "Publication year",
+        "type": "integer",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "category",
+        "label": "Category",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "shelf_location",
+        "label": "Shelf location",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "notes",
+        "label": "Notes",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "active",
+        "label": "Active",
+        "type": "boolean",
+        "required": true,
+        "default": true,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "isbn",
+      "title",
+      "subtitle",
+      "author",
+      "publisher"
+    ]
+  },
+  {
+    "key": "library_copies",
+    "table": "library_copies",
+    "title": "Library physical copies",
+    "group": "Library",
+    "editable": [
+      "title_id",
+      "barcode",
+      "accession_number",
+      "status",
+      "condition_notes",
+      "acquired_on"
+    ],
+    "help": "Correct copy details and condition. Use normal checkout and return for circulation.",
+    "archive_field": null,
+    "primary_keys": [
+      "id"
+    ],
+    "fields": [
+      {
+        "name": "title_id",
+        "label": "Title",
+        "type": "uuid",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": {
+          "table": "library_titles",
+          "column": "id"
+        },
+        "primary": false
+      },
+      {
+        "name": "barcode",
+        "label": "Barcode",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "accession_number",
+        "label": "Accession number",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "status",
+        "label": "Status",
+        "type": "text",
+        "required": true,
+        "default": "available",
+        "options": [
+          "available",
+          "on_loan",
+          "missing",
+          "damaged",
+          "withdrawn"
+        ],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "condition_notes",
+        "label": "Condition notes",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "acquired_on",
+        "label": "Acquired on",
+        "type": "date",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "title_id",
+      "barcode",
+      "accession_number",
+      "status",
+      "condition_notes"
+    ]
+  },
+  {
+    "key": "ops_settings",
+    "table": "ops_settings",
+    "title": "Operations configuration",
+    "group": "Configuration",
+    "editable": [
+      "setting_key",
+      "setting_value",
+      "description"
+    ],
+    "help": "Maintain approved operations settings. Choose a value type and enter the value through the form.",
+    "archive_field": null,
+    "primary_keys": [
+      "setting_key"
+    ],
+    "fields": [
+      {
+        "name": "setting_key",
+        "label": "Setting key",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [
+          "finance_enabled",
+          "jira_project_key",
+          "report_week_starts_on",
+          "school_timezone",
+          "session_hours"
+        ],
+        "reference": null,
+        "primary": true
+      },
+      {
+        "name": "setting_value",
+        "label": "Setting value",
+        "type": "jsonb",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "description",
+        "label": "Description",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "setting_key",
+      "setting_value",
+      "description"
+    ]
+  },
+  {
+    "key": "library_settings",
+    "table": "library_settings",
+    "title": "Library configuration",
+    "group": "Library",
+    "editable": [
+      "setting_key",
+      "setting_value",
+      "description"
+    ],
+    "help": "Maintain library loan rules and catalogue visibility. Daily rule changes can also be made in Library settings.",
+    "archive_field": null,
+    "primary_keys": [
+      "setting_key"
+    ],
+    "fields": [
+      {
+        "name": "setting_key",
+        "label": "Setting key",
+        "type": "text",
+        "required": true,
+        "default": null,
+        "options": [
+          "loan_days",
+          "max_active_loans",
+          "max_renewals",
+          "public_catalog_enabled"
+        ],
+        "reference": null,
+        "primary": true
+      },
+      {
+        "name": "setting_value",
+        "label": "Setting value",
+        "type": "jsonb",
+        "required": true,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      },
+      {
+        "name": "description",
+        "label": "Description",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ],
+    "display_fields": [
+      "setting_key",
+      "setting_value",
+      "description"
+    ]
+  },
+  {
+    "key": "term_registrations",
+    "table": "term_registrations",
+    "title": "Enrolment corrections",
+    "group": "Student services",
+    "editable": [
+      "student_answers",
+      "staff_note"
+    ],
+    "primary_keys": [
+      "id"
+    ],
+    "archive_field": null,
+    "can_create": false,
+    "can_delete": false,
+    "actions": [
+      "reopen_registration"
+    ],
+    "help": "Reopen a completed enrolment before correcting it. Use the labelled student fields for reviewed corrections, including older terms. Staff sections are completed in Administration Staff. Existing submissions and change history are retained.",
+    "display_fields": [
+      "student_name_snapshot",
+      "registration_number_snapshot",
+      "term_id",
+      "status",
+      "completed_at"
+    ],
+    "fields": [
+      {
+        "name": "student_answers",
+        "label": "Student information",
+        "type": "jsonb",
+        "required": true,
+        "default": {},
+        "options": [],
+        "reference": null,
+        "primary": false,
+        "object_fields": [
+          {
+            "id": "gender",
+            "type": "select",
+            "label": "Gender",
+            "options": [
+              "Male",
+              "Female"
+            ],
+            "required": true
+          },
+          {
+            "id": "marital_status",
+            "type": "select",
+            "label": "Marital status",
+            "options": [
+              "Single",
+              "Married",
+              "Widowed",
+              "Divorced"
+            ],
+            "required": true
+          },
+          {
+            "id": "spouse_location",
+            "type": "text",
+            "label": "If married, where is your spouse?",
+            "required": false,
+            "show_when": {
+              "field": "marital_status",
+              "equals": "Married"
+            }
+          },
+          {
+            "id": "identity_number",
+            "type": "text",
+            "label": "ID number / passport number",
+            "required": true
+          },
+          {
+            "id": "student_email",
+            "type": "email",
+            "label": "Student email",
+            "required": true
+          },
+          {
+            "id": "student_phone",
+            "type": "tel",
+            "label": "Student phone number",
+            "required": true
+          },
+          {
+            "id": "sponsor_name",
+            "type": "text",
+            "label": "Sponsor name",
+            "required": false
+          },
+          {
+            "id": "sponsor_contact",
+            "type": "tel",
+            "label": "Sponsor contact number",
+            "required": false
+          },
+          {
+            "id": "accommodation_type",
+            "type": "select",
+            "label": "Type of accommodation",
+            "options": [
+              "Shared",
+              "Married"
+            ],
+            "required": false
+          },
+          {
+            "id": "accommodation_hostel",
+            "type": "text",
+            "label": "Hostel allocated",
+            "required": false,
+            "show_when": {
+              "field": "accommodation_type",
+              "equals": "Shared"
+            }
+          },
+          {
+            "id": "accommodation_room",
+            "type": "text",
+            "label": "Room number",
+            "required": false,
+            "show_when": {
+              "field": "accommodation_type",
+              "equals": "Shared"
+            }
+          },
+          {
+            "id": "shared_occupants",
+            "type": "number",
+            "label": "Number of occupants in room",
+            "required": false,
+            "show_when": {
+              "field": "accommodation_type",
+              "equals": "Shared"
+            }
+          }
+        ]
+      },
+      {
+        "name": "staff_note",
+        "label": "Staff note",
+        "type": "text",
+        "required": false,
+        "default": null,
+        "options": [],
+        "reference": null,
+        "primary": false
+      }
+    ]
+  }
+]
